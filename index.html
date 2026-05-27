@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>JUSTUS • Private Chat</title>
-<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#25D366">
 <style>
 * {
@@ -33,8 +32,6 @@ body {
   color: var(--text-primary);
   height: 100vh;
   overflow: hidden;
-  position: fixed;
-  width: 100%;
 }
 
 .app-container {
@@ -47,24 +44,41 @@ body {
 
 /* Main Content Area */
 .main-content {
-  display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
   width: 100%;
 }
 
-/* Sidebar - Full width on mobile */
-.sidebar {
+/* Page Container - handles showing/hiding */
+.page-container {
   width: 100%;
-  background: var(--bg-surface);
-  display: flex;
+  height: 100%;
+  position: relative;
+}
+
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
   flex-direction: column;
-  flex-shrink: 0;
-  transition: transform 0.3s ease;
+  overflow: hidden;
 }
 
-.sidebar-header {
-  padding: 16px 16px;
+.page.active {
+  display: flex;
+}
+
+/* Chats Page - Sidebar style */
+.chats-page {
+  background: var(--bg-surface);
+}
+
+.chats-header {
+  padding: 16px;
   background: var(--bg-surface-light);
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -87,7 +101,6 @@ body {
   display: block;
 }
 
-/* 3 Dots Menu Button */
 .menu-btn {
   background: none;
   border: none;
@@ -223,6 +236,10 @@ body {
   font-size: 14px;
 }
 
+.search-container input::placeholder {
+  color: var(--text-muted);
+}
+
 /* Chat List */
 .chat-list {
   flex: 1;
@@ -242,6 +259,10 @@ body {
   background: rgba(255,255,255,0.05);
 }
 
+.chat-avatar {
+  position: relative;
+}
+
 .chat-avatar-img {
   width: 50px;
   height: 50px;
@@ -252,7 +273,6 @@ body {
   justify-content: center;
   font-size: 18px;
   font-weight: bold;
-  position: relative;
 }
 
 .online-dot {
@@ -281,10 +301,6 @@ body {
   color: var(--text-secondary);
 }
 
-.chat-preview.typing {
-  color: #34B7F1;
-}
-
 .chat-meta {
   text-align: right;
 }
@@ -309,24 +325,9 @@ body {
   padding: 0 5px;
 }
 
-/* Chat Panel - Full screen */
-.main-chat {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+/* Chat Detail Page */
+.chat-detail-page {
   background: var(--bg-dark);
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 20;
-  display: none;
-  width: 100%;
-}
-
-.main-chat.show {
-  display: flex;
 }
 
 .chat-header {
@@ -466,6 +467,29 @@ body {
   justify-content: center;
 }
 
+/* Other Pages (Updates, Communities, Calls) */
+.placeholder-page {
+  background: var(--bg-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 20px;
+  height: 100%;
+}
+
+.placeholder-icon {
+  font-size: 60px;
+  opacity: 0.5;
+}
+
+.placeholder-text {
+  font-size: 14px;
+}
+
 /* Bottom Navigation */
 .bottom-nav {
   background: var(--bg-surface-light);
@@ -504,33 +528,6 @@ body {
 
 .nav-item.active .nav-label {
   color: var(--accent);
-}
-
-/* Other Pages */
-.page-content {
-  flex: 1;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  color: var(--text-secondary);
-  text-align: center;
-  background: var(--bg-dark);
-  padding: 20px;
-}
-
-.page-content.active {
-  display: flex;
-}
-
-.empty-icon {
-  font-size: 60px;
-  opacity: 0.5;
-}
-
-.empty-text {
-  font-size: 14px;
 }
 
 /* Status Panel */
@@ -671,41 +668,36 @@ body {
 
   <!-- Main Content -->
   <div class="main-content">
-    <!-- Sidebar / Chats List -->
-    <div class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo"><h1>JUSTUS</h1><span>🔒 Private & Secure</span></div>
-        <button class="menu-btn" id="menuBtn">⋮</button>
+    <div class="page-container">
+      
+      <!-- Chats Page -->
+      <div class="page chats-page active" id="chatsPage">
+        <div class="chats-header">
+          <div class="logo"><h1>JUSTUS</h1><span>🔒 Private & Secure</span></div>
+          <button class="menu-btn" id="menuBtn">⋮</button>
+        </div>
+        
+        <div class="dropdown-menu" id="dropdownMenu">
+          <div class="dropdown-item" id="dropdownSettings"><span>⚙️</span><span>Settings</span></div>
+          <div class="dropdown-item" id="dropdownProfile"><span>👤</span><span>Profile</span></div>
+          <div class="dropdown-item" id="dropdownInvite"><span>🔗</span><span>Invite Code</span></div>
+          <div class="dropdown-item danger" id="dropdownLogout"><span>🚪</span><span>Logout</span></div>
+        </div>
+        
+        <div class="user-bar" id="userBar">
+          <div class="avatar online"><span id="userInitial">AJ</span></div>
+          <div class="user-info"><div class="user-name" id="userName">Alex J.</div><div class="user-status">Online</div></div>
+        </div>
+        
+        <div class="search-bar">
+          <div class="search-container"><span>🔍</span><input type="text" placeholder="Search" id="searchInput"></div>
+        </div>
+        
+        <div class="chat-list" id="chatList"></div>
       </div>
       
-      <div class="dropdown-menu" id="dropdownMenu">
-        <div class="dropdown-item" id="dropdownSettings"><span>⚙️</span><span>Settings</span></div>
-        <div class="dropdown-item" id="dropdownProfile"><span>👤</span><span>Profile</span></div>
-        <div class="dropdown-item" id="dropdownInvite"><span>🔗</span><span>Invite Code</span></div>
-        <div class="dropdown-item danger" id="dropdownLogout"><span>🚪</span><span>Logout</span></div>
-      </div>
-      
-      <div class="user-bar" id="userBar">
-        <div class="avatar online"><span id="userInitial">AJ</span></div>
-        <div class="user-info"><div class="user-name" id="userName">Alex J.</div><div class="user-status">Online</div></div>
-      </div>
-      
-      <div class="search-bar">
-        <div class="search-container"><span>🔍</span><input type="text" placeholder="Search" id="searchInput"></div>
-      </div>
-      
-      <div class="chat-list" id="chatList"></div>
-    </div>
-    
-    <!-- Chat Panel -->
-    <div class="main-chat" id="mainChat">
-      <div class="empty-state" id="emptyState" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--text-secondary);text-align:center;padding:20px;">
-        <div class="empty-icon">💬</div>
-        <div class="empty-text">Select a chat to start messaging</div>
-        <div style="font-size:11px;">Powered by JUSTUS 🔒</div>
-      </div>
-      
-      <div id="activeChat" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+      <!-- Chat Detail Page -->
+      <div class="page chat-detail-page" id="chatDetailPage">
         <div class="chat-header">
           <button class="back-btn" id="backBtn">←</button>
           <div class="chat-header-avatar"><span id="chatAvatar">?</span><div class="online-dot" id="chatOnlineDot" style="display:none;"></div></div>
@@ -717,12 +709,35 @@ body {
           <button class="send-btn" id="sendBtn">➤</button>
         </div>
       </div>
+      
+      <!-- Updates Page -->
+      <div class="page" id="updatesPage">
+        <div class="placeholder-page">
+          <div class="placeholder-icon">📢</div>
+          <div class="placeholder-text">Status Updates</div>
+          <div style="font-size:12px;">Coming soon</div>
+        </div>
+      </div>
+      
+      <!-- Communities Page -->
+      <div class="page" id="communitiesPage">
+        <div class="placeholder-page">
+          <div class="placeholder-icon">👥</div>
+          <div class="placeholder-text">Communities</div>
+          <div style="font-size:12px;">Coming soon</div>
+        </div>
+      </div>
+      
+      <!-- Calls Page -->
+      <div class="page" id="callsPage">
+        <div class="placeholder-page">
+          <div class="placeholder-icon">📞</div>
+          <div class="placeholder-text">Call History</div>
+          <div style="font-size:12px;">Coming soon</div>
+        </div>
+      </div>
+      
     </div>
-
-    <!-- Other Pages -->
-    <div class="page-content" id="updatesPage"><div class="empty-icon">📢</div><div class="empty-text">Status Updates</div><div style="font-size:12px;">Coming soon</div></div>
-    <div class="page-content" id="communitiesPage"><div class="empty-icon">👥</div><div class="empty-text">Communities</div><div style="font-size:12px;">Coming soon</div></div>
-    <div class="page-content" id="callsPage"><div class="empty-icon">📞</div><div class="empty-text">Call History</div><div style="font-size:12px;">Coming soon</div></div>
   </div>
 
   <!-- Bottom Navigation -->
@@ -753,45 +768,40 @@ let messagesData = {
 let currentChatId = null;
 let currentPage = "chats";
 
+// Page switching
 function switchPage(page) {
   currentPage = page;
+  
+  // Update bottom nav active state
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.remove('active');
     if (item.dataset.page === page) item.classList.add('active');
   });
   
-  const sidebar = document.getElementById('sidebar');
-  const mainChat = document.getElementById('mainChat');
-  const updatesPage = document.getElementById('updatesPage');
-  const communitiesPage = document.getElementById('communitiesPage');
-  const callsPage = document.getElementById('callsPage');
+  // Hide all pages
+  document.getElementById('chatsPage').classList.remove('active');
+  document.getElementById('chatDetailPage').classList.remove('active');
+  document.getElementById('updatesPage').classList.remove('active');
+  document.getElementById('communitiesPage').classList.remove('active');
+  document.getElementById('callsPage').classList.remove('active');
   
-  sidebar.style.display = 'none';
-  mainChat.style.display = 'none';
-  updatesPage.style.display = 'none';
-  communitiesPage.style.display = 'none';
-  callsPage.style.display = 'none';
-  
+  // Show selected page
   if (page === 'chats') {
-    sidebar.style.display = 'flex';
-    mainChat.style.display = 'flex';
-    if (!currentChatId) {
-      document.getElementById('emptyState').style.display = 'flex';
-      document.getElementById('activeChat').style.display = 'none';
-    } else {
-      document.getElementById('emptyState').style.display = 'none';
-      document.getElementById('activeChat').style.display = 'flex';
-    }
-  } else if (page === 'updates') updatesPage.style.display = 'flex';
-  else if (page === 'communities') communitiesPage.style.display = 'flex';
-  else if (page === 'calls') callsPage.style.display = 'flex';
+    document.getElementById('chatsPage').classList.add('active');
+  } else if (page === 'updates') {
+    document.getElementById('updatesPage').classList.add('active');
+  } else if (page === 'communities') {
+    document.getElementById('communitiesPage').classList.add('active');
+  } else if (page === 'calls') {
+    document.getElementById('callsPage').classList.add('active');
+  }
 }
 
 function renderChatList() {
   const container = document.getElementById('chatList');
   container.innerHTML = demoChats.map(chat => `
     <div class="chat-item" data-chat-id="${chat.id}">
-      <div style="position:relative"><div class="chat-avatar-img">${chat.avatar}</div>${chat.online ? '<div class="online-dot"></div>' : ''}</div>
+      <div class="chat-avatar"><div class="chat-avatar-img">${chat.avatar}</div>${chat.online ? '<div class="online-dot"></div>' : ''}</div>
       <div class="chat-info"><div class="chat-name">${chat.name}</div><div class="chat-preview">${chat.lastMessage}</div></div>
       <div class="chat-meta"><div class="chat-time">${chat.time}</div>${chat.unread > 0 ? `<div class="unread-badge">${chat.unread}</div>` : ''}</div>
     </div>
@@ -807,17 +817,13 @@ function openChat(chatId) {
   const chat = demoChats.find(c => c.id === chatId);
   if (!chat) return;
   
-  if (currentPage !== 'chats') switchPage('chats');
-  
-  document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('activeChat').style.display = 'flex';
-  document.getElementById('mainChat').classList.add('show');
-  
+  // Update chat detail page header
   document.getElementById('chatName').textContent = chat.name;
   document.getElementById('chatAvatar').textContent = chat.avatar;
   document.getElementById('chatOnlineDot').style.display = chat.online ? 'block' : 'none';
   document.getElementById('chatStatus').textContent = chat.online ? 'Online' : 'Offline';
   
+  // Load messages
   const messages = messagesData[chatId] || [];
   const container = document.getElementById('messagesArea');
   container.innerHTML = messages.map(msg => `
@@ -827,8 +833,19 @@ function openChat(chatId) {
   `).join('');
   container.scrollTop = container.scrollHeight;
   
+  // Hide chats page, show chat detail page
+  document.getElementById('chatsPage').classList.remove('active');
+  document.getElementById('chatDetailPage').classList.add('active');
+  
+  // Clear unread
   chat.unread = 0;
   renderChatList();
+}
+
+function closeChat() {
+  currentChatId = null;
+  document.getElementById('chatDetailPage').classList.remove('active');
+  document.getElementById('chatsPage').classList.add('active');
 }
 
 // Send message
@@ -845,6 +862,7 @@ document.getElementById('sendBtn').addEventListener('click', () => {
   container.scrollTop = container.scrollHeight;
   input.value = '';
   
+  // Auto reply
   setTimeout(() => {
     const reply = document.createElement('div');
     reply.className = 'message received';
@@ -854,53 +872,81 @@ document.getElementById('sendBtn').addEventListener('click', () => {
   }, 1000);
 });
 
+// Enter to send
 document.getElementById('messageInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('sendBtn').click(); }
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    document.getElementById('sendBtn').click();
+  }
 });
 
-document.getElementById('backBtn').addEventListener('click', () => {
-  document.getElementById('mainChat').classList.remove('show');
-  currentChatId = null;
-  document.getElementById('emptyState').style.display = 'flex';
-  document.getElementById('activeChat').style.display = 'none';
-});
+// Back button
+document.getElementById('backBtn').addEventListener('click', closeChat);
 
-// Navigation
+// Bottom navigation
 document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => switchPage(item.dataset.page));
+  item.addEventListener('click', () => {
+    if (item.dataset.page === 'chats') {
+      // If we're in chat detail, close it first
+      if (currentChatId) {
+        closeChat();
+      }
+      switchPage('chats');
+    } else {
+      switchPage(item.dataset.page);
+    }
+  });
 });
 
 // 3 Dots Menu
 const menuBtn = document.getElementById('menuBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
-menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
+menuBtn.addEventListener('click', (e) => { 
+  e.stopPropagation(); 
+  dropdownMenu.classList.toggle('show'); 
+});
 document.addEventListener('click', () => dropdownMenu.classList.remove('show'));
 dropdownMenu.addEventListener('click', (e) => e.stopPropagation());
 
+// Dropdown actions
 document.getElementById('dropdownSettings').addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('⚙️ Settings coming soon'); });
 document.getElementById('dropdownProfile').addEventListener('click', () => { dropdownMenu.classList.remove('show'); document.getElementById('userBar').click(); });
 document.getElementById('dropdownInvite').addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('🔐 Invite Code: JUSTUS'); });
 document.getElementById('dropdownLogout').addEventListener('click', () => { dropdownMenu.classList.remove('show'); if(confirm('Logout?')) alert('Logged out'); });
 
-// Status panel
+// Status panel swipe
 let touchStartX = 0;
 let isPanelOpen = false;
 const statusPanel = document.getElementById('statusPanel');
 const panelOverlay = document.getElementById('panelOverlay');
 
-function openStatusPanel() { statusPanel.classList.add('open'); panelOverlay.classList.add('show'); isPanelOpen = true; }
-function closeStatusPanel() { statusPanel.classList.remove('open'); panelOverlay.classList.remove('show'); isPanelOpen = false; }
+function openStatusPanel() { 
+  statusPanel.classList.add('open'); 
+  panelOverlay.classList.add('show'); 
+  isPanelOpen = true; 
+}
+function closeStatusPanel() { 
+  statusPanel.classList.remove('open'); 
+  panelOverlay.classList.remove('show'); 
+  isPanelOpen = false; 
+}
 
-document.querySelector('.main-content').addEventListener('touchstart', (e) => { if(e.touches[0].clientX < 50) touchStartX = e.touches[0].clientX; });
-document.querySelector('.main-content').addEventListener('touchend', (e) => { if(touchStartX && e.changedTouches[0].clientX < touchStartX - 50 && !isPanelOpen) openStatusPanel(); });
+document.querySelector('.main-content').addEventListener('touchstart', (e) => { 
+  if(e.touches[0].clientX < 50) touchStartX = e.touches[0].clientX; 
+});
+document.querySelector('.main-content').addEventListener('touchend', (e) => { 
+  if(touchStartX && e.changedTouches[0].clientX < touchStartX - 50 && !isPanelOpen) openStatusPanel(); 
+});
 panelOverlay.addEventListener('click', closeStatusPanel);
 document.getElementById('userBar').addEventListener('click', openStatusPanel);
+
+// Status panel buttons
 document.getElementById('statusProfileBtn').addEventListener('click', () => { closeStatusPanel(); alert('👤 Profile: Alex J.\n🔒 End-to-end encrypted'); });
 document.getElementById('statusInviteBtn').addEventListener('click', () => { closeStatusPanel(); alert('🔗 Invite Code: JUSTUS'); });
 document.getElementById('statusLogoutBtn').addEventListener('click', () => { closeStatusPanel(); if(confirm('Logout?')) alert('Logged out'); });
 
+// Initialize
 renderChatList();
-switchPage('chats');
 </script>
 </body>
-  </html>
+</html>

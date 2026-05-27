@@ -117,7 +117,7 @@ body {
   display: flex;
 }
 
-/* Header - Dark Grey like WhatsApp */
+/* Header - Dark Grey */
 .header {
   padding: 16px;
   background: var(--header-bg);
@@ -199,7 +199,7 @@ body {
   color: #EF4444;
 }
 
-/* Search - Now directly below header (no user bar) */
+/* Search Bar */
 .search-bar {
   padding: 10px 16px;
   background: var(--bg-white);
@@ -301,7 +301,7 @@ body {
   padding: 0 5px;
 }
 
-/* Chat Detail Header */
+/* Chat Detail Header - Dark Grey */
 .chat-header {
   padding: 12px 16px;
   background: var(--header-bg);
@@ -371,10 +371,6 @@ body {
   text-decoration: none;
 }
 
-.encryption-notice a:active {
-  text-decoration: underline;
-}
-
 /* Timer Notice */
 .timer-notice {
   background: var(--bg-surface);
@@ -385,6 +381,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
 .timer-text {
@@ -396,10 +393,7 @@ body {
   text-decoration: none;
   font-weight: 500;
   font-size: 12px;
-}
-
-.timer-link:active {
-  text-decoration: underline;
+  white-space: nowrap;
 }
 
 /* Messages Area */
@@ -459,7 +453,6 @@ body {
 .date-divider {
   text-align: center;
   margin: 16px 0;
-  position: relative;
 }
 
 .date-divider span {
@@ -581,7 +574,7 @@ body {
   font-weight: 600;
 }
 
-/* Status Panel - removed user bar reference but keep for settings */
+/* Status Panel */
 .status-panel {
   position: fixed;
   left: -260px;
@@ -750,7 +743,7 @@ body {
       <div class="dropdown-item danger" id="dropLogout">🚪 Logout</div>
     </div>
     
-    <!-- Search Bar - User bar REMOVED as requested -->
+    <!-- Search Bar - NO USER BAR as requested -->
     <div class="search-bar">
       <div class="search-container"><span>🔍</span><input type="text" placeholder="Search" id="searchInput"></div>
     </div>
@@ -758,7 +751,7 @@ body {
     <div class="chat-list" id="chatList"></div>
   </div>
 
-  <!-- Screen 2: Chat Detail (Chiselda style) -->
+  <!-- Screen 2: Chat Detail (Chiselda) -->
   <div class="screen-chat" id="screenChat">
     <div class="chat-header">
       <button class="back-btn" id="backBtn">←</button>
@@ -806,7 +799,7 @@ body {
     <div class="placeholder-content"><div class="placeholder-icon">📞</div><div>Call History</div><div style="font-size:12px">Coming soon</div></div>
   </div>
 
-  <!-- Bottom Navigation - 4 tabs: Chats, Updates, Communities, Calls -->
+  <!-- Bottom Navigation - 4 tabs -->
   <div class="bottom-nav">
     <div class="nav-item active" data-screen="chats">
       <div class="nav-icon">💬</div>
@@ -959,6 +952,7 @@ function sendMessage() {
   }, 1000);
 }
 
+// Event Listeners
 document.getElementById('changeTimerLink')?.addEventListener('click', (e) => {
   e.preventDefault();
   alert('⏳ Change disappearing messages timer:\n\n• 24 hours (current)\n• 7 days\n• 90 days\n• Off');
@@ -974,6 +968,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => showScreen(item.dataset.screen));
 });
 
+// Menu dropdown
 const menuBtn = document.getElementById('menuBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
 menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
@@ -984,6 +979,7 @@ document.getElementById('dropProfile').addEventListener('click', () => { dropdow
 document.getElementById('dropInvite').addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('🔐 Invite Code: JUSTUS'); });
 document.getElementById('dropLogout').addEventListener('click', () => { dropdownMenu.classList.remove('show'); if(confirm('Logout from JUSTUS?')) alert('Logged out'); });
 
+// Status panel
 let panelOpen = false;
 const statusPanel = document.getElementById('statusPanel');
 const overlay = document.getElementById('panelOverlay');
@@ -996,6 +992,7 @@ document.getElementById('statusProfile').addEventListener('click', () => { close
 document.getElementById('statusInvite').addEventListener('click', () => { closePanel(); alert('🔐 Invite Code: JUSTUS'); });
 document.getElementById('statusLogout').addEventListener('click', () => { closePanel(); if(confirm('Logout?')) alert('Logged out'); });
 
+// Initialize
 renderChatList();
 showScreen('chats');
 updateStats();

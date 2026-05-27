@@ -37,93 +37,68 @@ body {
   background: var(--bg-white);
   color: var(--text-primary);
   height: 100vh;
+  width: 100vw;
   overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
+/* Main container - full screen flex column */
 .app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100%;
   background: var(--bg-white);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Main Content */
+/* Main Content - takes remaining space */
 .main-content {
   flex: 1;
   overflow: hidden;
   position: relative;
   width: 100%;
+  min-height: 0;
 }
 
-/* Screen 1: Chat List */
-.screen-chats {
+/* All screens - full height flex column */
+.screen-chats, .screen-updates, .screen-communities, .screen-calls {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   background: var(--bg-white);
+  overflow: hidden;
 }
 
-/* Screen 2: Chat Detail */
 .screen-chat {
   width: 100%;
   height: 100%;
   display: none;
   flex-direction: column;
   background: var(--bg-surface);
+  overflow: hidden;
 }
 
 .screen-chat.show {
   display: flex;
 }
 
-/* Screen 3: Updates */
-.screen-updates {
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  background: var(--bg-white);
-}
-
-.screen-updates.show {
+.screen-updates.show, .screen-communities.show, .screen-calls.show {
   display: flex;
 }
 
-/* Screen 4: Communities */
-.screen-communities {
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  background: var(--bg-white);
-}
-
-.screen-communities.show {
-  display: flex;
-}
-
-/* Screen 5: Calls */
-.screen-calls {
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  background: var(--bg-white);
-}
-
-.screen-calls.show {
-  display: flex;
-}
-
-/* Header - Dark Grey */
+/* Header - Fixed at top */
 .header {
   padding: 16px;
   background: var(--header-bg);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .logo h1 {
@@ -203,6 +178,7 @@ body {
 .search-bar {
   padding: 10px 16px;
   background: var(--bg-white);
+  flex-shrink: 0;
 }
 
 .search-container {
@@ -228,10 +204,11 @@ body {
   color: var(--text-muted);
 }
 
-/* Chat List */
+/* Chat List - scrollable */
 .chat-list {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .chat-item {
@@ -259,11 +236,12 @@ body {
   font-size: 18px;
   font-weight: bold;
   color: white;
-  position: relative;
+  flex-shrink: 0;
 }
 
 .chat-info {
   flex: 1;
+  min-width: 0;
 }
 
 .chat-name {
@@ -275,10 +253,14 @@ body {
 .chat-preview {
   font-size: 12px;
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chat-meta {
   text-align: right;
+  flex-shrink: 0;
 }
 
 .chat-time {
@@ -301,13 +283,14 @@ body {
   padding: 0 5px;
 }
 
-/* Chat Detail Header - Dark Grey */
+/* Chat Detail Header */
 .chat-header {
   padding: 12px 16px;
   background: var(--header-bg);
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .back-btn {
@@ -339,10 +322,12 @@ body {
   font-size: 18px;
   font-weight: bold;
   color: white;
+  flex-shrink: 0;
 }
 
 .chat-header-info {
   flex: 1;
+  min-width: 0;
 }
 
 .chat-header-name {
@@ -364,6 +349,7 @@ body {
   font-size: 12px;
   color: var(--text-secondary);
   text-align: center;
+  flex-shrink: 0;
 }
 
 .encryption-notice a {
@@ -382,6 +368,7 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .timer-text {
@@ -396,7 +383,7 @@ body {
   white-space: nowrap;
 }
 
-/* Messages Area */
+/* Messages Area - scrollable */
 .messages-area {
   flex: 1;
   overflow-y: auto;
@@ -405,6 +392,7 @@ body {
   flex-direction: column;
   gap: 8px;
   background: var(--bg-surface);
+  -webkit-overflow-scrolling: touch;
 }
 
 .message {
@@ -463,7 +451,7 @@ body {
   border-radius: 20px;
 }
 
-/* Input Area */
+/* Input Area - fixed at bottom of chat screen */
 .input-area {
   padding: 10px 16px;
   background: var(--bg-white);
@@ -471,6 +459,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .message-input {
@@ -502,6 +491,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .send-btn:active {
@@ -527,7 +517,7 @@ body {
   opacity: 0.5;
 }
 
-/* Bottom Navigation - 4 tabs */
+/* Bottom Navigation - ALWAYS VISIBLE AT BOTTOM */
 .bottom-nav {
   background: var(--bg-white);
   border-top: 1px solid var(--border);
@@ -536,6 +526,7 @@ body {
   align-items: center;
   padding: 8px 12px;
   flex-shrink: 0;
+  width: 100%;
 }
 
 .nav-item {
@@ -743,7 +734,6 @@ body {
       <div class="dropdown-item danger" id="dropLogout">🚪 Logout</div>
     </div>
     
-    <!-- Search Bar - NO USER BAR as requested -->
     <div class="search-bar">
       <div class="search-container"><span>🔍</span><input type="text" placeholder="Search" id="searchInput"></div>
     </div>
@@ -751,7 +741,7 @@ body {
     <div class="chat-list" id="chatList"></div>
   </div>
 
-  <!-- Screen 2: Chat Detail (Chiselda) -->
+  <!-- Screen 2: Chat Detail -->
   <div class="screen-chat" id="screenChat">
     <div class="chat-header">
       <button class="back-btn" id="backBtn">←</button>
@@ -799,7 +789,7 @@ body {
     <div class="placeholder-content"><div class="placeholder-icon">📞</div><div>Call History</div><div style="font-size:12px">Coming soon</div></div>
   </div>
 
-  <!-- Bottom Navigation - 4 tabs -->
+  <!-- Bottom Navigation - ALWAYS VISIBLE -->
   <div class="bottom-nav">
     <div class="nav-item active" data-screen="chats">
       <div class="nav-icon">💬</div>

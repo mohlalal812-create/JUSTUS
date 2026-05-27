@@ -12,22 +12,28 @@
 }
 
 :root {
-  --bg-dark: #0a0a0a;
-  --bg-surface: #111111;
-  --bg-surface-light: #1a1a1a;
+  --bg-white: #ffffff;
+  --bg-surface: #f5f5f5;
+  --bg-surface-light: #e8e8e8;
   --accent: #25D366;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --text-muted: #6b6b6b;
-  --border: #2a2a2a;
-  --sent-msg: #005C4B;
-  --received-msg: #1f2c34;
+  --accent-dark: #075E54;
+  --accent-light: #DCF8C6;
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border: #e0e0e0;
+  --sent-msg: #DCF8C6;
+  --sent-text: #111111;
+  --received-msg: #ffffff;
+  --received-text: #111111;
   --online: #25D366;
+  --nav-active: #25D366;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: var(--bg-dark);
+  background: var(--bg-white);
   color: var(--text-primary);
   height: 100vh;
   overflow: hidden;
@@ -38,7 +44,7 @@ body {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: var(--bg-dark);
+  background: var(--bg-white);
 }
 
 /* Main Content */
@@ -55,11 +61,7 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-surface);
-}
-
-.screen-chats.hide {
-  display: none;
+  background: var(--bg-white);
 }
 
 /* Screen 2: Chat Detail */
@@ -68,7 +70,7 @@ body {
   height: 100%;
   display: none;
   flex-direction: column;
-  background: var(--bg-dark);
+  background: var(--bg-surface);
 }
 
 .screen-chat.show {
@@ -81,7 +83,7 @@ body {
   height: 100%;
   display: none;
   flex-direction: column;
-  background: var(--bg-dark);
+  background: var(--bg-white);
 }
 
 .screen-updates.show {
@@ -94,7 +96,7 @@ body {
   height: 100%;
   display: none;
   flex-direction: column;
-  background: var(--bg-dark);
+  background: var(--bg-white);
 }
 
 .screen-communities.show {
@@ -107,7 +109,7 @@ body {
   height: 100%;
   display: none;
   flex-direction: column;
-  background: var(--bg-dark);
+  background: var(--bg-white);
 }
 
 .screen-calls.show {
@@ -117,7 +119,7 @@ body {
 /* Header */
 .header {
   padding: 16px;
-  background: var(--bg-surface-light);
+  background: var(--bg-white);
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
@@ -127,10 +129,7 @@ body {
 .logo h1 {
   font-size: 22px;
   font-weight: 800;
-  background: linear-gradient(135deg, #25D366, #128C7E, #8B5CF6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent-dark);
 }
 
 .logo span {
@@ -156,7 +155,7 @@ body {
 }
 
 .menu-btn:active {
-  background: rgba(255,255,255,0.1);
+  background: var(--bg-surface);
 }
 
 /* Dropdown */
@@ -164,13 +163,13 @@ body {
   position: fixed;
   top: 60px;
   right: 16px;
-  background: var(--bg-surface);
+  background: var(--bg-white);
   border: 1px solid var(--border);
   border-radius: 16px;
   width: 200px;
   z-index: 200;
   display: none;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .dropdown-menu.show {
@@ -185,6 +184,7 @@ body {
   cursor: pointer;
   border-bottom: 1px solid var(--border);
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 .dropdown-item:last-child {
@@ -192,7 +192,7 @@ body {
 }
 
 .dropdown-item:active {
-  background: rgba(255,255,255,0.05);
+  background: var(--bg-surface);
 }
 
 .dropdown-item.danger {
@@ -202,7 +202,7 @@ body {
 /* User Bar */
 .user-bar {
   padding: 10px 16px;
-  background: var(--bg-surface-light);
+  background: var(--bg-white);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -214,12 +214,13 @@ body {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #25D366, #128C7E);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   font-weight: bold;
+  color: white;
   position: relative;
 }
 
@@ -232,7 +233,7 @@ body {
   height: 12px;
   background: var(--online);
   border-radius: 50%;
-  border: 2px solid var(--bg-surface-light);
+  border: 2px solid var(--bg-white);
 }
 
 .user-info {
@@ -252,11 +253,11 @@ body {
 /* Search */
 .search-bar {
   padding: 10px 16px;
-  background: var(--bg-surface);
+  background: var(--bg-white);
 }
 
 .search-container {
-  background: var(--bg-dark);
+  background: var(--bg-surface);
   border-radius: 30px;
   padding: 8px 14px;
   display: flex;
@@ -274,6 +275,10 @@ body {
   font-size: 14px;
 }
 
+.search-container input::placeholder {
+  color: var(--text-muted);
+}
+
 /* Chat List */
 .chat-list {
   flex: 1;
@@ -287,22 +292,24 @@ body {
   padding: 12px 16px;
   cursor: pointer;
   border-bottom: 1px solid var(--border);
+  background: var(--bg-white);
 }
 
 .chat-item:active {
-  background: rgba(255,255,255,0.05);
+  background: var(--bg-surface);
 }
 
 .chat-avatar-img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #25D366, #075E54);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   font-weight: bold;
+  color: white;
   position: relative;
 }
 
@@ -348,7 +355,7 @@ body {
 /* Chat Detail */
 .chat-header {
   padding: 12px 16px;
-  background: var(--bg-surface-light);
+  background: var(--bg-white);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -368,16 +375,22 @@ body {
   justify-content: center;
 }
 
+.back-btn:active {
+  background: var(--bg-surface);
+  border-radius: 50%;
+}
+
 .chat-header-avatar {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #25D366, #075E54);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   font-weight: bold;
+  color: white;
 }
 
 .chat-header-info {
@@ -391,7 +404,7 @@ body {
 
 .chat-header-status {
   font-size: 11px;
-  color: var(--text-secondary);
+  color: var(--online);
 }
 
 .messages-area {
@@ -401,6 +414,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background: var(--bg-surface);
 }
 
 .message {
@@ -421,17 +435,18 @@ body {
   border-radius: 18px;
   font-size: 14px;
   line-height: 1.4;
+  box-shadow: var(--shadow);
 }
 
 .message.sent .message-bubble {
   background: var(--sent-msg);
-  color: white;
+  color: var(--sent-text);
   border-bottom-right-radius: 4px;
 }
 
 .message.received .message-bubble {
   background: var(--received-msg);
-  color: var(--text-primary);
+  color: var(--received-text);
   border-bottom-left-radius: 4px;
 }
 
@@ -446,7 +461,7 @@ body {
 
 .input-area {
   padding: 10px 16px;
-  background: var(--bg-surface-light);
+  background: var(--bg-white);
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -455,7 +470,7 @@ body {
 
 .message-input {
   flex: 1;
-  background: var(--bg-dark);
+  background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 24px;
   padding: 8px 14px;
@@ -464,6 +479,10 @@ body {
   font-family: inherit;
   outline: none;
   resize: none;
+}
+
+.message-input:focus {
+  border-color: var(--accent);
 }
 
 .send-btn {
@@ -480,6 +499,10 @@ body {
   justify-content: center;
 }
 
+.send-btn:active {
+  transform: scale(0.95);
+}
+
 /* Placeholder Pages */
 .placeholder-content {
   flex: 1;
@@ -491,6 +514,7 @@ body {
   color: var(--text-secondary);
   text-align: center;
   padding: 20px;
+  background: var(--bg-white);
 }
 
 .placeholder-icon {
@@ -500,33 +524,40 @@ body {
 
 /* Bottom Navigation */
 .bottom-nav {
-  background: var(--bg-surface-light);
+  background: var(--bg-white);
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 6px 12px;
+  padding: 8px 12px;
   flex-shrink: 0;
+  box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
 }
 
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   padding: 6px 0;
   cursor: pointer;
   flex: 1;
+  transition: all 0.2s;
+  border-radius: 8px;
+}
+
+.nav-item:active {
+  background: var(--bg-surface);
 }
 
 .nav-icon {
   font-size: 22px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 .nav-label {
   font-size: 11px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -536,21 +567,23 @@ body {
 
 .nav-item.active .nav-label {
   color: var(--accent);
+  font-weight: 600;
 }
 
-/* Status Panel */
+/* Status Panel - White & Green */
 .status-panel {
   position: fixed;
   left: -260px;
   top: 0;
   bottom: 0;
   width: 260px;
-  background: var(--bg-surface);
+  background: var(--bg-white);
   border-right: 1px solid var(--border);
   z-index: 100;
   transition: left 0.3s ease;
   display: flex;
   flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
 }
 
 .status-panel.open {
@@ -559,7 +592,7 @@ body {
 
 .status-header {
   padding: 40px 20px 20px;
-  background: linear-gradient(135deg, #1a1a2e, #0a0a0a);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   text-align: center;
 }
 
@@ -567,23 +600,25 @@ body {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #25D366, #8B5CF6);
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 36px;
   font-weight: bold;
   margin: 0 auto 10px;
+  color: var(--accent-dark);
 }
 
 .status-name {
   font-size: 18px;
   font-weight: 700;
+  color: white;
 }
 
 .status-handle {
   font-size: 11px;
-  color: var(--accent);
+  color: rgba(255,255,255,0.8);
 }
 
 .status-stats {
@@ -591,6 +626,7 @@ body {
   justify-content: space-around;
   padding: 16px;
   border-bottom: 1px solid var(--border);
+  background: var(--bg-white);
 }
 
 .stat-number {
@@ -606,6 +642,7 @@ body {
 
 .status-menu {
   padding: 16px;
+  background: var(--bg-white);
 }
 
 .status-menu-item {
@@ -617,6 +654,10 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.status-menu-item:active {
+  opacity: 0.7;
+}
+
 .status-menu-icon {
   width: 36px;
   height: 36px;
@@ -626,6 +667,7 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 18px;
+  color: var(--accent);
 }
 
 .status-menu-title {
@@ -638,10 +680,18 @@ body {
   color: var(--text-muted);
 }
 
+.status-menu-item.danger .status-menu-icon {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.status-menu-item.danger .status-menu-title {
+  color: #EF4444;
+}
+
 .panel-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.3);
   z-index: 99;
   display: none;
 }
@@ -663,8 +713,8 @@ body {
       <div class="status-handle">@JUSTUS</div>
     </div>
     <div class="status-stats">
-      <div class="stat-item"><div class="stat-number">4</div><div class="stat-label">Chats</div></div>
-      <div class="stat-item"><div class="stat-number">47</div><div class="stat-label">Messages</div></div>
+      <div class="stat-item"><div class="stat-number" id="statChats">4</div><div class="stat-label">Chats</div></div>
+      <div class="stat-item"><div class="stat-number" id="statMessages">47</div><div class="stat-label">Messages</div></div>
       <div class="stat-item"><div class="stat-number">🔒</div><div class="stat-label">Private</div></div>
     </div>
     <div class="status-menu">
@@ -709,7 +759,7 @@ body {
       <div class="chat-header-info"><div class="chat-header-name" id="chatName">Contact</div><div class="chat-header-status" id="chatStatus">Online</div></div>
     </div>
     <div class="messages-area" id="messagesArea">
-      <div style="text-align:center;color:var(--text-muted);padding:20px">No messages yet</div>
+      <div style="text-align:center;color:var(--text-muted);padding:20px">✨ No messages yet</div>
     </div>
     <div class="input-area">
       <textarea class="message-input" id="messageInput" rows="1" placeholder="Type a message..."></textarea>
@@ -737,10 +787,22 @@ body {
 
   <!-- Bottom Navigation -->
   <div class="bottom-nav">
-    <div class="nav-item active" data-screen="chats"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
-    <div class="nav-item" data-screen="updates"><div class="nav-icon">📢</div><div class="nav-label">Updates</div></div>
-    <div class="nav-item" data-screen="communities"><div class="nav-icon">👥</div><div class="nav-label">Communities</div></div>
-    <div class="nav-item" data-screen="calls"><div class="nav-icon">📞</div><div class="nav-label">Calls</div></div>
+    <div class="nav-item active" data-screen="chats">
+      <div class="nav-icon">💬</div>
+      <div class="nav-label">Chats</div>
+    </div>
+    <div class="nav-item" data-screen="updates">
+      <div class="nav-icon">📢</div>
+      <div class="nav-label">Updates</div>
+    </div>
+    <div class="nav-item" data-screen="communities">
+      <div class="nav-icon">👥</div>
+      <div class="nav-label">Communities</div>
+    </div>
+    <div class="nav-item" data-screen="calls">
+      <div class="nav-icon">📞</div>
+      <div class="nav-label">Calls</div>
+    </div>
   </div>
 </div>
 
@@ -761,16 +823,14 @@ const messagesData = {
 };
 
 let currentChatId = null;
+let messageCount = 47;
 
-// Screen switching
+function updateStats() {
+  document.getElementById('statChats').innerText = demoChats.length;
+  document.getElementById('statMessages').innerText = messageCount;
+}
+
 function showScreen(screenName) {
-  // Hide all screens
-  document.getElementById('screenChats').classList.remove('hide');
-  document.getElementById('screenChat').classList.remove('show');
-  document.getElementById('screenUpdates').classList.remove('show');
-  document.getElementById('screenCommunities').classList.remove('show');
-  document.getElementById('screenCalls').classList.remove('show');
-  
   document.getElementById('screenChats').style.display = 'none';
   document.getElementById('screenChat').style.display = 'none';
   document.getElementById('screenUpdates').style.display = 'none';
@@ -789,16 +849,12 @@ function showScreen(screenName) {
     document.getElementById('screenCalls').style.display = 'flex';
   }
   
-  // Update bottom nav active state
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.remove('active');
-    if (item.dataset.screen === screenName) {
-      item.classList.add('active');
-    }
+    if (item.dataset.screen === screenName) item.classList.add('active');
   });
 }
 
-// Render chat list
 function renderChatList() {
   const container = document.getElementById('chatList');
   container.innerHTML = demoChats.map(chat => `
@@ -820,7 +876,6 @@ function renderChatList() {
   });
 }
 
-// Open chat
 function openChat(chatId) {
   currentChatId = chatId;
   const chat = demoChats.find(c => c.id === chatId);
@@ -833,7 +888,7 @@ function openChat(chatId) {
   const messages = messagesData[chatId] || [];
   const container = document.getElementById('messagesArea');
   if (messages.length === 0) {
-    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">No messages yet</div>';
+    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">✨ No messages yet</div>';
   } else {
     container.innerHTML = messages.map(msg => `
       <div class="message ${msg.sent ? 'sent' : 'received'}">
@@ -843,23 +898,19 @@ function openChat(chatId) {
   }
   container.scrollTop = container.scrollHeight;
   
-  // Clear unread
   chat.unread = 0;
   renderChatList();
-  
-  // Show chat screen
   showScreen('chat');
 }
 
-// Send message
 function sendMessage() {
   const input = document.getElementById('messageInput');
   const text = input.value.trim();
   if (!text || !currentChatId) return;
   
   const container = document.getElementById('messagesArea');
+  if (container.innerHTML.includes('No messages yet')) container.innerHTML = '';
   
-  // Add sent message
   const newMsg = document.createElement('div');
   newMsg.className = 'message sent';
   newMsg.innerHTML = `<div class="message-bubble">${text}<div class="message-meta"><span>Now</span></div></div>`;
@@ -867,57 +918,43 @@ function sendMessage() {
   container.scrollTop = container.scrollHeight;
   input.value = '';
   
-  // Auto reply
+  messageCount++;
+  updateStats();
+  
   setTimeout(() => {
     const reply = document.createElement('div');
     reply.className = 'message received';
     reply.innerHTML = `<div class="message-bubble">🔒 Received on JUSTUS<div class="message-meta"><span>Now</span></div></div>`;
     container.appendChild(reply);
     container.scrollTop = container.scrollHeight;
+    messageCount++;
+    updateStats();
   }, 1000);
 }
 
 // Event listeners
 document.getElementById('sendBtn').addEventListener('click', sendMessage);
 document.getElementById('messageInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
 document.getElementById('backBtn').addEventListener('click', () => showScreen('chats'));
 
-// Bottom navigation
 document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    const screen = item.dataset.screen;
-    if (screen === 'chats') {
-      showScreen('chats');
-    } else if (screen === 'updates') {
-      showScreen('updates');
-    } else if (screen === 'communities') {
-      showScreen('communities');
-    } else if (screen === 'calls') {
-      showScreen('calls');
-    }
-  });
+  item.addEventListener('click', () => showScreen(item.dataset.screen));
 });
 
 // 3 Dots Menu
 const menuBtn = document.getElementById('menuBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
-menuBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  dropdownMenu.classList.toggle('show');
-});
+menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
 document.addEventListener('click', () => dropdownMenu.classList.remove('show'));
 
 document.getElementById('dropSettings').addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('⚙️ Settings coming soon'); });
 document.getElementById('dropProfile').addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('👤 Profile: Alex J.\n@JUSTUS'); });
 document.getElementById('dropInvite').addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('🔐 Invite Code: JUSTUS'); });
-document.getElementById('dropLogout').addEventListener('click', () => { dropdownMenu.classList.remove('show'); if(confirm('Logout?')) alert('Logged out'); });
+document.getElementById('dropLogout').addEventListener('click', () => { dropdownMenu.classList.remove('show'); if(confirm('Logout from JUSTUS?')) alert('Logged out'); });
 
-// Status panel swipe
+// Status panel
 let touchStart = 0;
 let panelOpen = false;
 const statusPanel = document.getElementById('statusPanel');
@@ -934,13 +971,14 @@ document.querySelector('.main-content')?.addEventListener('touchend', (e) => {
 });
 overlay.addEventListener('click', closePanel);
 document.getElementById('userBar').addEventListener('click', openPanel);
-document.getElementById('statusProfile').addEventListener('click', () => { closePanel(); alert('Profile'); });
-document.getElementById('statusInvite').addEventListener('click', () => { closePanel(); alert('Invite Code: JUSTUS'); });
+document.getElementById('statusProfile').addEventListener('click', () => { closePanel(); alert('👤 Profile: Alex J.\n@JUSTUS\n🔒 End-to-end encrypted'); });
+document.getElementById('statusInvite').addEventListener('click', () => { closePanel(); alert('🔐 Invite Code: JUSTUS'); });
 document.getElementById('statusLogout').addEventListener('click', () => { closePanel(); if(confirm('Logout?')) alert('Logged out'); });
 
 // Initialize
 renderChatList();
 showScreen('chats');
+updateStats();
 </script>
 </body>
 </html>

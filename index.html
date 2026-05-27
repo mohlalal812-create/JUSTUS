@@ -1,984 +1,780 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>JUSTUS • Private Chat</title>
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --bg-white: #ffffff;
-  --bg-surface: #f5f5f5;
-  --bg-surface-light: #e8e8e8;
-  --accent: #25D366;
-  --accent-dark: #075E54;
-  --accent-light: #DCF8C6;
-  --text-primary: #111111;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --border: #e0e0e0;
-  --sent-msg: #DCF8C6;
-  --sent-text: #111111;
-  --received-msg: #ffffff;
-  --received-text: #111111;
-  --online: #25D366;
-  --nav-active: #25D366;
-  --shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: var(--bg-white);
-  color: var(--text-primary);
-  height: 100vh;
-  overflow: hidden;
-}
-
-.app-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100%;
-  background: var(--bg-white);
-}
-
-/* Main Content */
-.main-content {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-}
-
-/* Screen 1: Chat List */
-.screen-chats {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-white);
-}
-
-/* Screen 2: Chat Detail */
-.screen-chat {
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  background: var(--bg-surface);
-}
-
-.screen-chat.show {
-  display: flex;
-}
-
-/* Screen 3: Updates */
-.screen-updates {
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  background: var(--bg-white);
-}
-
-.screen-updates.show {
-  display: flex;
-}
-
-/* Screen 4: Communities */
-.screen-communities {
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  background: var(--bg-white);
-}
-
-.screen-communities.show {
-  display: flex;
-}
-
-/* Screen 5: Calls */
-.screen-calls {
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  background: var(--bg-white);
-}
-
-.screen-calls.show {
-  display: flex;
-}
-
-/* Header */
-.header {
-  padding: 16px;
-  background: var(--bg-white);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo h1 {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--accent-dark);
-}
-
-.logo span {
-  font-size: 9px;
-  color: var(--text-muted);
-  display: block;
-}
-
-.menu-btn {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menu-btn:active {
-  background: var(--bg-surface);
-}
-
-/* Dropdown */
-.dropdown-menu {
-  position: fixed;
-  top: 60px;
-  right: 16px;
-  background: var(--bg-white);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  width: 200px;
-  z-index: 200;
-  display: none;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-.dropdown-menu.show {
-  display: block;
-}
-
-.dropdown-item {
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  font-size: 14px;
-  color: var(--text-primary);
-}
-
-.dropdown-item:last-child {
-  border-bottom: none;
-}
-
-.dropdown-item:active {
-  background: var(--bg-surface);
-}
-
-.dropdown-item.danger {
-  color: #EF4444;
-}
-
-/* User Bar */
-.user-bar {
-  padding: 10px 16px;
-  background: var(--bg-white);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-}
-
-.avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: bold;
-  color: white;
-  position: relative;
-}
-
-.avatar.online::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 12px;
-  height: 12px;
-  background: var(--online);
-  border-radius: 50%;
-  border: 2px solid var(--bg-white);
-}
-
-.user-info {
-  flex: 1;
-}
-
-.user-name {
-  font-weight: 700;
-  font-size: 16px;
-}
-
-.user-status {
-  font-size: 11px;
-  color: var(--online);
-}
-
-/* Search */
-.search-bar {
-  padding: 10px 16px;
-  background: var(--bg-white);
-}
-
-.search-container {
-  background: var(--bg-surface);
-  border-radius: 30px;
-  padding: 8px 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--border);
-}
-
-.search-container input {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  flex: 1;
-  outline: none;
-  font-size: 14px;
-}
-
-.search-container input::placeholder {
-  color: var(--text-muted);
-}
-
-/* Chat List */
-.chat-list {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.chat-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-white);
-}
-
-.chat-item:active {
-  background: var(--bg-surface);
-}
-
-.chat-avatar-img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-  position: relative;
-}
-
-.chat-info {
-  flex: 1;
-}
-
-.chat-name {
-  font-weight: 600;
-  font-size: 15px;
-  margin-bottom: 4px;
-}
-
-.chat-preview {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.chat-meta {
-  text-align: right;
-}
-
-.chat-time {
-  font-size: 10px;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.unread-badge {
-  background: var(--accent);
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 5px;
-}
-
-/* Chat Detail */
-.chat-header {
-  padding: 12px 16px;
-  background: var(--bg-white);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.back-btn {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 28px;
-  cursor: pointer;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-btn:active {
-  background: var(--bg-surface);
-  border-radius: 50%;
-}
-
-.chat-header-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-}
-
-.chat-header-info {
-  flex: 1;
-}
-
-.chat-header-name {
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.chat-header-status {
-  font-size: 11px;
-  color: var(--online);
-}
-
-.messages-area {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background: var(--bg-surface);
-}
-
-.message {
-  display: flex;
-  max-width: 80%;
-}
-
-.message.sent {
-  align-self: flex-end;
-}
-
-.message.received {
-  align-self: flex-start;
-}
-
-.message-bubble {
-  padding: 8px 12px;
-  border-radius: 18px;
-  font-size: 14px;
-  line-height: 1.4;
-  box-shadow: var(--shadow);
-}
-
-.message.sent .message-bubble {
-  background: var(--sent-msg);
-  color: var(--sent-text);
-  border-bottom-right-radius: 4px;
-}
-
-.message.received .message-bubble {
-  background: var(--received-msg);
-  color: var(--received-text);
-  border-bottom-left-radius: 4px;
-}
-
-.message-meta {
-  display: flex;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-top: 4px;
-  font-size: 9px;
-  opacity: 0.7;
-}
-
-.input-area {
-  padding: 10px 16px;
-  background: var(--bg-white);
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.message-input {
-  flex: 1;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 8px 14px;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-  resize: none;
-}
-
-.message-input:focus {
-  border-color: var(--accent);
-}
-
-.send-btn {
-  background: var(--accent);
-  border: none;
-  color: white;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.send-btn:active {
-  transform: scale(0.95);
-}
-
-/* Placeholder Pages */
-.placeholder-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  color: var(--text-secondary);
-  text-align: center;
-  padding: 20px;
-  background: var(--bg-white);
-}
-
-.placeholder-icon {
-  font-size: 60px;
-  opacity: 0.5;
-}
-
-/* Bottom Navigation */
-.bottom-nav {
-  background: var(--bg-white);
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 8px 12px;
-  flex-shrink: 0;
-  box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 0;
-  cursor: pointer;
-  flex: 1;
-  transition: all 0.2s;
-  border-radius: 8px;
-}
-
-.nav-item:active {
-  background: var(--bg-surface);
-}
-
-.nav-icon {
-  font-size: 22px;
-  color: var(--text-muted);
-}
-
-.nav-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.nav-item.active .nav-icon {
-  color: var(--accent);
-}
-
-.nav-item.active .nav-label {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-/* Status Panel - White & Green */
-.status-panel {
-  position: fixed;
-  left: -260px;
-  top: 0;
-  bottom: 0;
-  width: 260px;
-  background: var(--bg-white);
-  border-right: 1px solid var(--border);
-  z-index: 100;
-  transition: left 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-}
-
-.status-panel.open {
-  left: 0;
-}
-
-.status-header {
-  padding: 40px 20px 20px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  text-align: center;
-}
-
-.status-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  font-weight: bold;
-  margin: 0 auto 10px;
-  color: var(--accent-dark);
-}
-
-.status-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
-}
-
-.status-handle {
-  font-size: 11px;
-  color: rgba(255,255,255,0.8);
-}
-
-.status-stats {
-  display: flex;
-  justify-content: space-around;
-  padding: 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-white);
-}
-
-.stat-number {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.stat-label {
-  font-size: 9px;
-  color: var(--text-muted);
-}
-
-.status-menu {
-  padding: 16px;
-  background: var(--bg-white);
-}
-
-.status-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-}
-
-.status-menu-item:active {
-  opacity: 0.7;
-}
-
-.status-menu-icon {
-  width: 36px;
-  height: 36px;
-  background: rgba(37, 211, 102, 0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: var(--accent);
-}
-
-.status-menu-title {
-  font-weight: 600;
-  font-size: 13px;
-}
-
-.status-menu-desc {
-  font-size: 9px;
-  color: var(--text-muted);
-}
-
-.status-menu-item.danger .status-menu-icon {
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.status-menu-item.danger .status-menu-title {
-  color: #EF4444;
-}
-
-.panel-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.3);
-  z-index: 99;
-  display: none;
-}
-
-.panel-overlay.show {
-  display: block;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Chats - Modern Messenger UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Mobile container */
+        .phone {
+            width: 390px;
+            height: 844px;
+            background-color: #121212;
+            border-radius: 44px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.5), 0 0 0 8px #1e1e1e;
+        }
+
+        /* Scrollable content */
+        .scroll-area {
+            height: calc(100% - 74px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #4CAF50 #2D2D2D;
+        }
+
+        .scroll-area::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .scroll-area::-webkit-scrollbar-track {
+            background: #2D2D2D;
+        }
+
+        .scroll-area::-webkit-scrollbar-thumb {
+            background: #4CAF50;
+            border-radius: 10px;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background-color: #121212;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .time {
+            opacity: 0.9;
+        }
+
+        .battery {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            padding: 8px 20px 4px;
+        }
+
+        .chat-header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        /* Chat Item */
+        .chat-item {
+            display: flex;
+            padding: 12px 16px;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .chat-item:hover {
+            background-color: #1e1e1e;
+        }
+
+        .avatar {
+            width: 52px;
+            height: 52px;
+            background-color: #2D2D2D;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .avatar span {
+            font-size: 24px;
+        }
+
+        .online-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            border: 2px solid #121212;
+        }
+
+        .chat-details {
+            flex: 1;
+        }
+
+        .chat-name {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .name {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .time {
+            color: #888;
+            font-size: 11px;
+        }
+
+        .message-preview {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .preview-text {
+            color: #aaa;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 220px;
+        }
+
+        .status-icon {
+            color: #888;
+            font-size: 12px;
+        }
+
+        /* CHART SECTION (as requested) */
+        .chart-container {
+            background-color: #1E1E1E;
+            margin: 16px 16px 20px 16px;
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .chart-header h3 {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .trend-badge {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .chart-area {
+            background-color: #252525;
+            border-radius: 20px;
+            padding: 16px 8px 8px 8px;
+            position: relative;
+        }
+
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 140px;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        .bar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 40px;
+        }
+
+        .bar {
+            width: 32px;
+            background: linear-gradient(180deg, #4CAF50, #2E7D32);
+            border-radius: 12px;
+            transition: height 0.4s ease;
+            box-shadow: 0 0 6px rgba(76,175,80,0.3);
+        }
+
+        .bar-label {
+            color: #888;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .line-chart {
+            position: relative;
+            height: 60px;
+            margin-top: 16px;
+            border-top: 1px solid #333;
+            padding-top: 12px;
+        }
+
+        .trend-line-svg {
+            width: 100%;
+            height: 45px;
+        }
+
+        .stats-note {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            color: #aaa;
+            font-size: 11px;
+            border-top: 1px solid #333;
+            padding-top: 12px;
+        }
+
+        /* Message bubbles (from second image content) */
+        .messages-preview {
+            padding: 8px 16px 20px;
+        }
+
+        .bubble-right {
+            background-color: #2D2D2D;
+            padding: 10px 14px;
+            border-radius: 20px;
+            max-width: 85%;
+            align-self: flex-end;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .message-text {
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+
+        .message-time {
+            color: #888;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .bubble-left {
+            background-color: #2D2D2D;
+            padding: 10px 14px;
+            border-radius: 20px;
+            max-width: 85%;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .right-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .green-bubble {
+            background-color: #4CAF50;
+            padding: 10px 18px;
+            border-radius: 24px;
+            color: white;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        /* Bottom Tab Bar (3 big icons as requested) */
+        .bottom-tab-bar {
+            background-color: #0F0F0F;
+            backdrop-filter: blur(10px);
+            display: flex;
+            height: 74px;
+            border-top: 0.5px solid #2D2D2D;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            z-index: 20;
+        }
+
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: #0F0F0F;
+        }
+
+        .tab-item.active {
+            background-color: #1E1E1E;
+        }
+
+        .tab-icon {
+            font-size: 28px;
+            width: 44px;
+            height: 44px;
+            background-color: #2D2D2D;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .tab-item.active .tab-icon {
+            background-color: #4CAF50;
+            box-shadow: 0 2px 12px rgba(76,175,80,0.3);
+        }
+
+        .tab-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #888;
+        }
+
+        .tab-item.active .tab-label {
+            color: #4CAF50;
+        }
+
+        /* simple interaction */
+        .separator {
+            height: 1px;
+            background-color: #252525;
+            margin: 8px 16px;
+        }
+
+        /* small badge for frostborn etc */
+        .app-grid {
+            display: none;
+        }
+        
+        /* custom home indicator */
+        .home-indicator {
+            width: 140px;
+            height: 5px;
+            background-color: #555;
+            border-radius: 100px;
+            margin: 10px auto 6px;
+        }
+        
+        .footer-placeholder {
+            height: 4px;
+        }
+    </style>
 </head>
 <body>
+<div class="phone">
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="battery">
+            <span>📶</span>
+            <span>🔋 98%</span>
+        </div>
+    </div>
 
-<div class="app-container">
-  
-  <!-- Status Panel -->
-  <div class="status-panel" id="statusPanel">
-    <div class="status-header">
-      <div class="status-avatar">AJ</div>
-      <div class="status-name">Alex J.</div>
-      <div class="status-handle">@JUSTUS</div>
-    </div>
-    <div class="status-stats">
-      <div class="stat-item"><div class="stat-number" id="statChats">4</div><div class="stat-label">Chats</div></div>
-      <div class="stat-item"><div class="stat-number" id="statMessages">47</div><div class="stat-label">Messages</div></div>
-      <div class="stat-item"><div class="stat-number">🔒</div><div class="stat-label">Private</div></div>
-    </div>
-    <div class="status-menu">
-      <div class="status-menu-item" id="statusProfile"><div class="status-menu-icon">👤</div><div><div class="status-menu-title">My Profile</div><div class="status-menu-desc">View and edit your info</div></div></div>
-      <div class="status-menu-item" id="statusInvite"><div class="status-menu-icon">🔗</div><div><div class="status-menu-title">Invite Friends</div><div class="status-menu-desc">Share JUSTUS invite code</div></div></div>
-      <div class="status-menu-item danger" id="statusLogout"><div class="status-menu-icon">🚪</div><div><div class="status-menu-title">Logout</div><div class="status-menu-desc">Sign out of JUSTUS</div></div></div>
-    </div>
-  </div>
-  <div class="panel-overlay" id="panelOverlay"></div>
+    <!-- Main scrollable content -->
+    <div class="scroll-area" id="scrollArea">
+        <!-- Chats header -->
+        <div class="chat-header">
+            <h1>Chats</h1>
+        </div>
 
-  <!-- Screen 1: Chats List -->
-  <div class="screen-chats" id="screenChats">
-    <div class="header">
-      <div class="logo"><h1>JUSTUS</h1><span>🔒 Private & Secure</span></div>
-      <button class="menu-btn" id="menuBtn">⋮</button>
-    </div>
-    
-    <div class="dropdown-menu" id="dropdownMenu">
-      <div class="dropdown-item" id="dropSettings">⚙️ Settings</div>
-      <div class="dropdown-item" id="dropProfile">👤 Profile</div>
-      <div class="dropdown-item" id="dropInvite">🔗 Invite Code</div>
-      <div class="dropdown-item danger" id="dropLogout">🚪 Logout</div>
-    </div>
-    
-    <div class="user-bar" id="userBar">
-      <div class="avatar online"><span>AJ</span></div>
-      <div class="user-info"><div class="user-name">Alex J.</div><div class="user-status">Online</div></div>
-    </div>
-    
-    <div class="search-bar">
-      <div class="search-container"><span>🔍</span><input type="text" placeholder="Search" id="searchInput"></div>
-    </div>
-    
-    <div class="chat-list" id="chatList"></div>
-  </div>
+        <!-- Chat: Toto Dee -->
+        <div class="chat-item">
+            <div class="avatar">
+                <span>🎮</span>
+                <div class="online-dot"></div>
+            </div>
+            <div class="chat-details">
+                <div class="chat-name">
+                    <span class="name">Toto Dee</span>
+                    <span class="time">18:34</span>
+                </div>
+                <div class="message-preview">
+                    <span class="preview-text">online · Voice call 26 mins</span>
+                    <span class="status-icon">🎧</span>
+                </div>
+            </div>
+        </div>
 
-  <!-- Screen 2: Chat Detail -->
-  <div class="screen-chat" id="screenChat">
-    <div class="chat-header">
-      <button class="back-btn" id="backBtn">←</button>
-      <div class="chat-header-avatar"><span id="chatAvatar">?</span></div>
-      <div class="chat-header-info"><div class="chat-header-name" id="chatName">Contact</div><div class="chat-header-status" id="chatStatus">Online</div></div>
-    </div>
-    <div class="messages-area" id="messagesArea">
-      <div style="text-align:center;color:var(--text-muted);padding:20px">✨ No messages yet</div>
-    </div>
-    <div class="input-area">
-      <textarea class="message-input" id="messageInput" rows="1" placeholder="Type a message..."></textarea>
-      <button class="send-btn" id="sendBtn">➤</button>
-    </div>
-  </div>
+        <!-- Chat: Frostborn + Global Goals mixture (but keep Bebe from image) -->
+        <div class="chat-item">
+            <div class="avatar">
+                <span>⚔️</span>
+            </div>
+            <div class="chat-details">
+                <div class="chat-name">
+                    <span class="name">Frostborn</span>
+                    <span class="time">17:20</span>
+                </div>
+                <div class="message-preview">
+                    <span class="preview-text">Clan war tomorrow! ⚔️</span>
+                </div>
+            </div>
+        </div>
 
-  <!-- Screen 3: Updates -->
-  <div class="screen-updates" id="screenUpdates">
-    <div class="header"><div class="logo"><h1>Updates</h1><span>Status</span></div><div style="width:44px"></div></div>
-    <div class="placeholder-content"><div class="placeholder-icon">📢</div><div>Status Updates</div><div style="font-size:12px">Coming soon</div></div>
-  </div>
+        <!-- Bebe - main chat with messages -->
+        <div class="chat-item">
+            <div class="avatar">
+                <span>👩</span>
+            </div>
+            <div class="chat-details">
+                <div class="chat-name">
+                    <span class="name">Bebe</span>
+                    <span class="time">21:05</span>
+                </div>
+                <div class="message-preview">
+                    <span class="preview-text">Okay good night</span>
+                    <span class="status-icon">✓✓</span>
+                </div>
+            </div>
+        </div>
 
-  <!-- Screen 4: Communities -->
-  <div class="screen-communities" id="screenCommunities">
-    <div class="header"><div class="logo"><h1>Communities</h1><span>Groups</span></div><div style="width:44px"></div></div>
-    <div class="placeholder-content"><div class="placeholder-icon">👥</div><div>Communities</div><div style="font-size:12px">Coming soon</div></div>
-  </div>
+        <div class="separator"></div>
 
-  <!-- Screen 5: Calls -->
-  <div class="screen-calls" id="screenCalls">
-    <div class="header"><div class="logo"><h1>Calls</h1><span>History</span></div><div style="width:44px"></div></div>
-    <div class="placeholder-content"><div class="placeholder-icon">📞</div><div>Call History</div><div style="font-size:12px">Coming soon</div></div>
-  </div>
+        <!-- ========== CHART LAYOUT (Inserted inside charts area) ========== -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3>
+                    <span>📊</span> Weekly Activity
+                </h3>
+                <div class="trend-badge">▲ +8.2%</div>
+            </div>
 
-  <!-- Bottom Navigation -->
-  <div class="bottom-nav">
-    <div class="nav-item active" data-screen="chats">
-      <div class="nav-icon">💬</div>
-      <div class="nav-label">Chats</div>
+            <div class="chart-area">
+                <!-- Bar Chart (big icons style / modern) -->
+                <div class="chart-bars" id="barChart">
+                    <!-- data injected via JS for flexibility but we build static with dynamic heights -->
+                </div>
+
+                <!-- Line chart overlay illustration -->
+                <div class="line-chart">
+                    <svg class="trend-line-svg" viewBox="0 0 340 40" preserveAspectRatio="none">
+                        <polyline points="20,32 65,26 110,15 155,20 200,30 245,36 290,8"
+                                  fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="20" cy="32" r="3" fill="#4CAF50" />
+                        <circle cx="110" cy="15" r="3" fill="#4CAF50" />
+                        <circle cx="290" cy="8" r="4.5" fill="#76FF03" stroke="#1E1E1E" stroke-width="1.5" />
+                    </svg>
+                </div>
+                <div class="stats-note">
+                    <span>🔥 Peak: Sunday</span>
+                    <span>📈 1.2k interactions</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages exactly from description (Bebe conversation + 'Bought 500mb bro' etc) -->
+        <div class="messages-preview">
+            <div class="bubble-left">
+                <span class="message-text">Bought 500mb bro</span>
+                <span class="message-time" style="margin-left: 12px;">21:03</span>
+            </div>
+            
+            <div class="bubble-left">
+                <span class="message-text">Online with what bro??</span>
+                <span class="message-time" style="margin-left: 12px;">21:02</span>
+            </div>
+
+            <div class="right-group">
+                <div class="green-bubble">
+                    Okay good night 💤
+                </div>
+                <span class="message-time" style="color:#888; font-size:10px; margin-right:8px;">21:05 ✓✓</span>
+            </div>
+        </div>
+
+        <!-- Additional apps / icons quick preview (MetaTrader, Maps, etc subtle from original image but not intrusive) -->
+        <div style="display: flex; gap: 20px; padding: 16px; overflow-x: auto; margin-bottom: 8px;">
+            <div style="text-align: center;"><div style="background:#2D2D2D; width:52px; height:52px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size:26px;">📈</div><span style="color:#aaa; font-size:10px;">MT4</span></div>
+            <div style="text-align: center;"><div style="background:#2D2D2D; width:52px; height:52px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size:26px;">🗺️</div><span style="color:#aaa; font-size:10px;">Maps</span></div>
+            <div style="text-align: center;"><div style="background:#2D2D2D; width:52px; height:52px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size:26px;">📄</div><span style="color:#aaa; font-size:10px;">PDF</span></div>
+            <div style="text-align: center;"><div style="background:#2D2D2D; width:52px; height:52px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size:26px;">🎵</div><span style="color:#aaa; font-size:10px;">Music</span></div>
+        </div>
+
+        <div class="footer-placeholder"></div>
     </div>
-    <div class="nav-item" data-screen="updates">
-      <div class="nav-icon">📢</div>
-      <div class="nav-label">Updates</div>
+
+    <!-- ========== BAR TAB MENU (3 items with BIG ICONS) ========== -->
+    <div class="bottom-tab-bar">
+        <div class="tab-item active" data-tab="chats">
+            <div class="tab-icon">💬</div>
+            <span class="tab-label">Chats</span>
+        </div>
+        <div class="tab-item" data-tab="updates">
+            <div class="tab-icon">📰</div>
+            <span class="tab-label">Updates</span>
+        </div>
+        <div class="tab-item" data-tab="communities">
+            <div class="tab-icon">👥</div>
+            <span class="tab-label">Communities</span>
+        </div>
     </div>
-    <div class="nav-item" data-screen="communities">
-      <div class="nav-icon">👥</div>
-      <div class="nav-label">Communities</div>
-    </div>
-    <div class="nav-item" data-screen="calls">
-      <div class="nav-icon">📞</div>
-      <div class="nav-label">Calls</div>
-    </div>
-  </div>
+    <!-- hidden home indicator style -->
+    <div class="home-indicator"></div>
 </div>
 
 <script>
-// Demo data
-const demoChats = [
-  { id: 1, name: "Sarah Chen", lastMessage: "Hey! How are you?", time: "10:42 AM", unread: 2, avatar: "S" },
-  { id: 2, name: "Mike Johnson", lastMessage: "Thanks for the update", time: "9:15 AM", unread: 0, avatar: "M" },
-  { id: 3, name: "Emily Davis", lastMessage: "Love the app! 🔥", time: "Yesterday", unread: 0, avatar: "E" },
-  { id: 4, name: "David Kim", lastMessage: "See you tomorrow", time: "Yesterday", unread: 1, avatar: "D" }
-];
-
-const messagesData = {
-  1: [{ text: "Hey! How are you?", sent: false, time: "10:41 AM" }, { text: "I'm good! Working on JUSTUS", sent: true, time: "10:42 AM" }],
-  2: [{ text: "Thanks for the update", sent: false, time: "9:10 AM" }],
-  3: [{ text: "Love the app! 🔥", sent: false, time: "Yesterday" }],
-  4: [{ text: "See you tomorrow", sent: false, time: "Yesterday" }]
-};
-
-let currentChatId = null;
-let messageCount = 47;
-
-function updateStats() {
-  document.getElementById('statChats').innerText = demoChats.length;
-  document.getElementById('statMessages').innerText = messageCount;
-}
-
-function showScreen(screenName) {
-  document.getElementById('screenChats').style.display = 'none';
-  document.getElementById('screenChat').style.display = 'none';
-  document.getElementById('screenUpdates').style.display = 'none';
-  document.getElementById('screenCommunities').style.display = 'none';
-  document.getElementById('screenCalls').style.display = 'none';
-  
-  if (screenName === 'chats') {
-    document.getElementById('screenChats').style.display = 'flex';
-  } else if (screenName === 'chat') {
-    document.getElementById('screenChat').style.display = 'flex';
-  } else if (screenName === 'updates') {
-    document.getElementById('screenUpdates').style.display = 'flex';
-  } else if (screenName === 'communities') {
-    document.getElementById('screenCommunities').style.display = 'flex';
-  } else if (screenName === 'calls') {
-    document.getElementById('screenCalls').style.display = 'flex';
-  }
-  
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-    if (item.dataset.screen === screenName) item.classList.add('active');
-  });
-}
-
-function renderChatList() {
-  const container = document.getElementById('chatList');
-  container.innerHTML = demoChats.map(chat => `
-    <div class="chat-item" data-id="${chat.id}">
-      <div class="chat-avatar-img">${chat.avatar}</div>
-      <div class="chat-info">
-        <div class="chat-name">${chat.name}</div>
-        <div class="chat-preview">${chat.lastMessage}</div>
-      </div>
-      <div class="chat-meta">
-        <div class="chat-time">${chat.time}</div>
-        ${chat.unread > 0 ? `<div class="unread-badge">${chat.unread}</div>` : ''}
-      </div>
-    </div>
-  `).join('');
-  
-  document.querySelectorAll('.chat-item').forEach(item => {
-    item.addEventListener('click', () => openChat(parseInt(item.dataset.id)));
-  });
-}
-
-function openChat(chatId) {
-  currentChatId = chatId;
-  const chat = demoChats.find(c => c.id === chatId);
-  if (!chat) return;
-  
-  document.getElementById('chatName').textContent = chat.name;
-  document.getElementById('chatAvatar').textContent = chat.avatar;
-  document.getElementById('chatStatus').textContent = "Online";
-  
-  const messages = messagesData[chatId] || [];
-  const container = document.getElementById('messagesArea');
-  if (messages.length === 0) {
-    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">✨ No messages yet</div>';
-  } else {
-    container.innerHTML = messages.map(msg => `
-      <div class="message ${msg.sent ? 'sent' : 'received'}">
-        <div class="message-bubble">${msg.text}<div class="message-meta"><span>${msg.time}</span></div></div>
-      </div>
-    `).join('');
-  }
-  container.scrollTop = container.scrollHeight;
-  
-  chat.unread = 0;
-  renderChatList();
-  showScreen('chat');
-}
-
-function sendMessage() {
-  const input = document.getElementById('messageInput');
-  const text = input.value.trim();
-  if (!text || !currentChatId) return;
-  
-  const container = document.getElementById('messagesArea');
-  if (container.innerHTML.includes('No messages yet')) container.innerHTML = '';
-  
-  const newMsg = document.createElement('div');
-  newMsg.className = 'message sent';
-  newMsg.innerHTML = `<div class="message-bubble">${text}<div class="message-meta"><span>Now</span></div></div>`;
-  container.appendChild(newMsg);
-  container.scrollTop = container.scrollHeight;
-  input.value = '';
-  
-  messageCount++;
-  updateStats();
-  
-  setTimeout(() => {
-    const reply = document.createElement('div');
-    reply.className = 'message received';
-    reply.innerHTML = `<div class="message-bubble">🔒 Received on JUSTUS<div class="message-meta"><span>Now</span></div></div>`;
-    container.appendChild(reply);
-    container.scrollTop = container.scrollHeight;
-    messageCount++;
-    updateStats();
-  }, 1000);
-}
-
-// Event listeners
-document.getElementById('sendBtn').addEventListener('click', sendMessage);
-document.getElementById('messageInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-});
-document.getElementById('backBtn').addEventListener('click', () => showScreen('chats'));
-
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => showScreen(item.dataset.screen));
-});
-
-// 3 Dots Menu
-const menuBtn = document.getElementById('menuBtn');
-const dropdownMenu = document.getElementById('dropdownMenu');
-menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
-document.addEventListener('click', () => dropdownMenu.classList.remove('show'));
-
-document.getElementById('dropSettings').addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('⚙️ Settings coming soon'); });
-document.getElementById('dropProfile').addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('👤 Profile: Alex J.\n@JUSTUS'); });
-document.getElementById('dropInvite').addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('🔐 Invite Code: JUSTUS'); });
-document.getElementById('dropLogout').addEventListener('click', () => { dropdownMenu.classList.remove('show'); if(confirm('Logout from JUSTUS?')) alert('Logged out'); });
-
-// Status panel
-let touchStart = 0;
-let panelOpen = false;
-const statusPanel = document.getElementById('statusPanel');
-const overlay = document.getElementById('panelOverlay');
-
-function openPanel() { statusPanel.classList.add('open'); overlay.classList.add('show'); panelOpen = true; }
-function closePanel() { statusPanel.classList.remove('open'); overlay.classList.remove('show'); panelOpen = false; }
-
-document.querySelector('.main-content')?.addEventListener('touchstart', (e) => {
-  if (e.touches[0].clientX < 50) touchStart = e.touches[0].clientX;
-});
-document.querySelector('.main-content')?.addEventListener('touchend', (e) => {
-  if (touchStart && e.changedTouches[0].clientX < touchStart - 50 && !panelOpen) openPanel();
-});
-overlay.addEventListener('click', closePanel);
-document.getElementById('userBar').addEventListener('click', openPanel);
-document.getElementById('statusProfile').addEventListener('click', () => { closePanel(); alert('👤 Profile: Alex J.\n@JUSTUS\n🔒 End-to-end encrypted'); });
-document.getElementById('statusInvite').addEventListener('click', () => { closePanel(); alert('🔐 Invite Code: JUSTUS'); });
-document.getElementById('statusLogout').addEventListener('click', () => { closePanel(); if(confirm('Logout?')) alert('Logged out'); });
-
-// Initialize
-renderChatList();
-showScreen('chats');
-updateStats();
+    // Generate bar chart inside the .chart-bars container with proper large icons / bars interactive
+    const barContainer = document.getElementById('barChart');
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const heights = [28, 48, 76, 62, 38, 22, 94]; // percentage-like for max 130px bar
+    
+    function renderBars() {
+        if(!barContainer) return;
+        barContainer.innerHTML = '';
+        const maxBarHeight = 110; // max px limit
+        
+        days.forEach((day, idx) => {
+            const barHeight = Math.max(20, (heights[idx] / 100) * maxBarHeight);
+            const barDiv = document.createElement('div');
+            barDiv.className = 'bar-item';
+            barDiv.innerHTML = `
+                <div class="bar" style="height: ${barHeight}px; width: 34px; background: linear-gradient(0deg, #2E7D32, #66BB6A); border-radius: 14px;"></div>
+                <div class="bar-label">${day}</div>
+            `;
+            barContainer.appendChild(barDiv);
+        });
+    }
+    renderBars();
+    
+    // Add hover tooltip effect for bars
+    const bars = document.querySelectorAll('.bar');
+    bars.forEach(bar => {
+        bar.addEventListener('mouseenter', function() {
+            this.style.opacity = '0.85';
+            this.style.transform = 'scaleX(1.05)';
+            this.style.transition = '0.2s';
+        });
+        bar.addEventListener('mouseleave', function() {
+            this.style.opacity = '1';
+            this.style.transform = 'scaleX(1)';
+        });
+    });
+    
+    // Tab switching logic: big icons bottom bar
+    const tabs = document.querySelectorAll('.tab-item');
+    const scrollArea = document.querySelector('.scroll-area');
+    
+    // store original content snapshot? Actually we just simulate view changes but not actual page navigation
+    // Since requirement: put bar tab on the front menu but add 3 of them with big icons.
+    // We'll add dynamic switching that shows different dummy content or toggles active class.
+    // Also giving functional feedback to match Chats, Updates, Communities
+    
+    function setActiveTab(activeTabId) {
+        tabs.forEach(tab => {
+            const tabId = tab.getAttribute('data-tab');
+            if(tabId === activeTabId) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+        
+        // change main content based on tab selection (but keep chart and layout structure)
+        // The chart must remain inside the chats layout as requested, but we preserve visibility.
+        // We also just toggle elements to mimic Updates and Communities views but still respect design
+        const chartDiv = document.querySelector('.chart-container');
+        const messagesPreview = document.querySelector('.messages-preview');
+        const appRow = document.querySelector('div[style*="gap: 20px; padding: 16px"]');
+        const chatItems = document.querySelectorAll('.chat-item');
+        const frostbornChat = document.querySelectorAll('.chat-item')[1];
+        
+        if(activeTabId === 'chats') {
+            // Show all chats, chart, messages preview
+            if(chartDiv) chartDiv.style.display = 'block';
+            if(messagesPreview) messagesPreview.style.display = 'block';
+            if(appRow) appRow.style.display = 'flex';
+            chatItems.forEach(item => item.style.display = 'flex');
+            document.querySelector('.chat-header').style.display = 'block';
+            const separator = document.querySelector('.separator');
+            if(separator) separator.style.display = 'block';
+        } 
+        else if(activeTabId === 'updates') {
+            if(chartDiv) chartDiv.style.display = 'block';
+            if(messagesPreview) messagesPreview.style.display = 'none';
+            if(appRow) appRow.style.display = 'none';
+            chatItems.forEach(item => item.style.display = 'none');
+            document.querySelector('.chat-header').style.display = 'none';
+            const separator = document.querySelector('.separator');
+            if(separator) separator.style.display = 'none';
+            
+            // Insert updates feed if not existing
+            let updatesDiv = document.getElementById('dynamicUpdates');
+            if(!updatesDiv) {
+                updatesDiv = document.createElement('div');
+                updatesDiv.id = 'dynamicUpdates';
+                updatesDiv.style.padding = '16px';
+                updatesDiv.style.backgroundColor = '#121212';
+                updatesDiv.innerHTML = `
+                    <div style="background:#1E1E1E; border-radius:24px; padding:18px; margin-bottom:16px;">
+                        <div style="display:flex; gap:14px; align-items:center;"><span style="font-size:36px;">📢</span><div><h3 style="color:white;">Global Goals</h3><p style="color:#aaa;">SDG progress +2.1%</p></div></div>
+                    </div>
+                    <div style="background:#1E1E1E; border-radius:24px; padding:18px; margin-bottom:16px;">
+                        <div style="display:flex; gap:14px;"><span style="font-size:36px;">🌍</span><div><h3 style="color:white;">Community Hub</h3><p style="color:#aaa;">New events this week</p></div></div>
+                    </div>
+                    <div style="background:#1E1E1E; border-radius:24px; padding:18px;">
+                        <div style="display:flex; gap:14px;"><span style="font-size:36px;">📰</span><div><h3 style="color:white;">Latest News</h3><p style="color:#aaa;">Frostborn update v2.3 released</p></div></div>
+                    </div>
+                `;
+                const scrollAreaContent = document.querySelector('.scroll-area');
+                // insert after chart-container
+                if(chartDiv && chartDiv.nextSibling) {
+                    scrollAreaContent.insertBefore(updatesDiv, chartDiv.nextSibling);
+                } else {
+                    scrollAreaContent.appendChild(updatesDiv);
+                }
+            } else {
+                updatesDiv.style.display = 'block';
+            }
+            // Hide chats-specific extra
+            const maybeUpdates = document.getElementById('dynamicUpdates');
+            if(maybeUpdates) maybeUpdates.style.display = 'block';
+            // hide also additional things like frostborn row
+        } 
+        else if(activeTabId === 'communities') {
+            if(chartDiv) chartDiv.style.display = 'block';
+            if(messagesPreview) messagesPreview.style.display = 'none';
+            if(appRow) appRow.style.display = 'none';
+            chatItems.forEach(item => item.style.display = 'none');
+            document.querySelector('.chat-header').style.display = 'none';
+            const separator = document.querySelector('.separator');
+            if(separator) separator.style.display = 'none';
+            
+            let communitiesDiv = document.getElementById('dynamicCommunities');
+            if(!communitiesDiv) {
+                communitiesDiv = document.createElement('div');
+                communitiesDiv.id = 'dynamicCommunities';
+                communitiesDiv.style.padding = '16px';
+                communitiesDiv.innerHTML = `
+                    <div style="background:#1E1E1E; border-radius:28px; padding:18px; margin-bottom:16px; display:flex; gap:14px; align-items:center;">
+                        <div style="background:#2D2D2D; width:56px; height:56px; border-radius:28px; display:flex; align-items:center; justify-content:center; font-size:28px;">🎮</div>
+                        <div><h3 style="color:white;">Frostborn Clan</h3><p style="color:#aaa;">124 members • 15 online</p></div>
+                    </div>
+                    <div style="background:#1E1E1E; border-radius:28px; padding:18px; margin-bottom:16px; display:flex; gap:14px;">
+                        <div style="background:#2D2D2D; width:56px; height:56px; border-radius:28px; display:flex; align-items:center; justify-content:center; font-size:28px;">💎</div>
+                        <div><h3 style="color:white;">Global Goals Guild</h3><p style="color:#aaa;">Eco initiatives</p></div>
+                    </div>
+                    <div style="background:#1E1E1E; border-radius:28px; padding:18px; display:flex; gap:14px;">
+                        <div style="background:#2D2D2D; width:56px; height:56px; border-radius:28px; display:flex; align-items:center; justify-content:center; font-size:28px;">📊</div>
+                        <div><h3 style="color:white;">MetaTraders</h3><p style="color:#aaa;">Market analysis daily</p></div>
+                    </div>
+                `;
+                const scrollAreaEl = document.querySelector('.scroll-area');
+                if(chartDiv && chartDiv.nextSibling) {
+                    scrollAreaEl.insertBefore(communitiesDiv, chartDiv.nextSibling);
+                } else {
+                    scrollAreaEl.appendChild(communitiesDiv);
+                }
+            } else {
+                communitiesDiv.style.display = 'block';
+            }
+            // Remove updates div if visible
+            const updDiv = document.getElementById('dynamicUpdates');
+            if(updDiv) updDiv.style.display = 'none';
+        }
+        
+        // if switching from updates to chats, remove dynamic blocks or hide properly
+        if(activeTabId === 'chats') {
+            const updatesDynamic = document.getElementById('dynamicUpdates');
+            const communitiesDynamic = document.getElementById('dynamicCommunities');
+            if(updatesDynamic) updatesDynamic.style.display = 'none';
+            if(communitiesDynamic) communitiesDynamic.style.display = 'none';
+            // ensure all chat items visible again
+            document.querySelectorAll('.chat-item').forEach(item => item.style.display = 'flex');
+            if(document.querySelector('.chat-header')) document.querySelector('.chat-header').style.display = 'block';
+            const sep = document.querySelector('.separator');
+            if(sep) sep.style.display = 'block';
+            if(messagesPreview) messagesPreview.style.display = 'block';
+            if(appRow) appRow.style.display = 'flex';
+            if(chartDiv) chartDiv.style.display = 'block';
+        }
+        if(activeTabId === 'updates') {
+            const commDiv = document.getElementById('dynamicCommunities');
+            if(commDiv) commDiv.style.display = 'none';
+            const updDivLocal = document.getElementById('dynamicUpdates');
+            if(updDivLocal) updDivLocal.style.display = 'block';
+        }
+        if(activeTabId === 'communities') {
+            const updHide = document.getElementById('dynamicUpdates');
+            if(updHide) updHide.style.display = 'none';
+            const commShow = document.getElementById('dynamicCommunities');
+            if(commShow) commShow.style.display = 'block';
+        }
+    }
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            const tabId = tab.getAttribute('data-tab');
+            setActiveTab(tabId);
+        });
+    });
+    
+    // initialize default "chats" active
+    setActiveTab('chats');
+    
+    // Adjust chart line / interactive tooltip demo (extra micro interaction)
+    const trendPoints = document.querySelectorAll('.trend-line-svg circle');
+    trendPoints.forEach(point => {
+        point.style.cursor = 'pointer';
+        point.addEventListener('mouseenter', () => {
+            point.setAttribute('r', '6');
+        });
+        point.addEventListener('mouseleave', () => {
+            if(point.getAttribute('cx') == '290') point.setAttribute('r', '4.5');
+            else point.setAttribute('r', '3');
+        });
+    });
+    
+    // dynamically update bar heights with animation after load
+    setTimeout(() => {
+        const dynamicBars = document.querySelectorAll('.bar');
+        dynamicBars.forEach((bar, idx) => {
+            let newH = [32, 52, 80, 68, 42, 26, 98];
+            const targetHeight = Math.max(20, (newH[idx] / 100) * 110);
+            bar.style.transition = 'height 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
+            bar.style.height = `${targetHeight}px`;
+        });
+    }, 200);
 </script>
 </body>
 </html>

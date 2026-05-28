@@ -11,8 +11,8 @@
   box-sizing: border-box;
 }
 
-/* THEMES */
-:root {
+/* Light Theme (Default) */
+body {
   --bg-primary: #ffffff;
   --bg-secondary: #f5f5f5;
   --bg-tertiary: #e8e8e8;
@@ -24,9 +24,8 @@
   --accent-dark: #666666;
   --sent-msg: #DCF8C6;
   --received-msg: #ffffff;
-  --header-bg: #2C2C2C;
+  --header-bg: #075E54;
   --header-text: white;
-  --shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 body.dark {
@@ -37,12 +36,10 @@ body.dark {
   --text-secondary: #bbbbbb;
   --text-muted: #888888;
   --border: #444444;
-  --accent: #aaaaaa;
-  --accent-dark: #888888;
+  --accent: #888888;
   --sent-msg: #075E54;
   --received-msg: #2a2a2a;
   --header-bg: #111111;
-  --header-text: #ffffff;
 }
 
 body.oled {
@@ -54,14 +51,9 @@ body.oled {
   --text-muted: #666666;
   --border: #222222;
   --accent: #888888;
-  --accent-dark: #666666;
   --sent-msg: #075E54;
   --received-msg: #111111;
   --header-bg: #000000;
-}
-
-* {
-  transition: background-color 0.3s ease, color 0.2s ease;
 }
 
 body {
@@ -74,6 +66,7 @@ body {
   position: fixed;
   top: 0;
   left: 0;
+  transition: background 0.2s;
 }
 
 .app-container {
@@ -81,43 +74,34 @@ body {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: var(--bg-primary);
 }
 
 .main-content {
   flex: 1;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Screens */
-.screen-chats, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile {
+.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile {
   display: none;
   flex-direction: column;
-  min-height: 100%;
+  height: 100%;
 }
 
-.screen-chat {
-  display: none;
-  flex-direction: column;
-  min-height: 100%;
-}
-
-.screen-chats.show, .screen-chat.show, 
-.screen-updates.show, .screen-communities.show, 
-.screen-calls.show, .screen-settings.show, .screen-profile.show {
+.screen-chats.show, .screen-chat.show, .screen-updates.show, 
+.screen-communities.show, .screen-calls.show, .screen-settings.show, .screen-profile.show {
   display: flex;
 }
 
-/* Header with CENTERED JUSTUS branding */
+/* Header - CENTERED JUSTUS */
 .header {
   padding: 16px;
   background: var(--header-bg);
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-shrink: 0;
   position: relative;
+  flex-shrink: 0;
 }
 
 .logo {
@@ -134,9 +118,8 @@ body {
 
 .logo span {
   font-size: 8px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.7);
   display: block;
-  letter-spacing: 1px;
 }
 
 .menu-btn {
@@ -145,21 +128,14 @@ body {
   background: none;
   border: none;
   color: var(--header-text);
-  font-size: 22px;
+  font-size: 24px;
   cursor: pointer;
   width: 44px;
   height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 50%;
 }
 
-.menu-btn:active {
-  background: rgba(255,255,255,0.1);
-}
-
-/* Chat Header with back button */
+/* Chat Header */
 .chat-header, .profile-header {
   padding: 12px 16px;
   background: var(--header-bg);
@@ -177,21 +153,14 @@ body {
   cursor: pointer;
   width: 36px;
   height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 50%;
 }
 
-.back-btn:active {
-  background: rgba(255,255,255,0.1);
-}
-
-.chat-header-avatar {
+.chat-header-avatar, .chat-avatar-img {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  background: linear-gradient(135deg, #888, #666);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -238,15 +207,7 @@ body {
 .chat-avatar-img {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 20px;
-  font-weight: bold;
-  color: white;
-  flex-shrink: 0;
 }
 
 .chat-info {
@@ -256,7 +217,6 @@ body {
 .chat-name {
   font-weight: 600;
   font-size: 16px;
-  margin-bottom: 4px;
 }
 
 .chat-preview {
@@ -269,13 +229,11 @@ body {
 
 .chat-meta {
   text-align: right;
-  flex-shrink: 0;
 }
 
 .chat-time {
   font-size: 10px;
   color: var(--text-muted);
-  margin-bottom: 4px;
 }
 
 .unread-badge {
@@ -290,9 +248,10 @@ body {
   align-items: center;
   justify-content: center;
   padding: 0 5px;
+  margin-top: 4px;
 }
 
-/* Messages Area */
+/* Messages */
 .messages-area {
   flex: 1;
   overflow-y: auto;
@@ -318,22 +277,19 @@ body {
 
 .message-bubble {
   padding: 10px 14px;
-  border-radius: 20px;
+  border-radius: 18px;
   font-size: 14px;
-  line-height: 1.4;
 }
 
 .message.sent .message-bubble {
   background: var(--sent-msg);
-  color: var(--text-primary);
   border-bottom-right-radius: 4px;
 }
 
 .message.received .message-bubble {
   background: var(--received-msg);
-  color: var(--text-primary);
   border-bottom-left-radius: 4px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .message-meta {
@@ -354,7 +310,6 @@ body {
   background: var(--bg-tertiary);
   padding: 4px 12px;
   font-size: 11px;
-  color: var(--text-muted);
   border-radius: 20px;
 }
 
@@ -376,12 +331,7 @@ body {
   padding: 10px 16px;
   outline: none;
   font-size: 14px;
-  font-family: inherit;
   color: var(--text-primary);
-}
-
-.message-input:focus {
-  border-color: var(--accent);
 }
 
 .send-btn {
@@ -393,21 +343,14 @@ body {
   border-radius: 50%;
   cursor: pointer;
   font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Profile Screen */
-.profile-header {
-  justify-content: flex-start;
-}
-
 .profile-avatar-large {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  background: linear-gradient(135deg, #888, #666);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -421,7 +364,6 @@ body {
   text-align: center;
   font-size: 24px;
   font-weight: 700;
-  margin-bottom: 8px;
 }
 
 .profile-status {
@@ -438,7 +380,7 @@ body {
 
 .profile-section-title {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text-muted);
   margin-bottom: 12px;
   text-transform: uppercase;
@@ -451,10 +393,6 @@ body {
   padding: 14px 0;
   cursor: pointer;
   border-bottom: 1px solid var(--border);
-}
-
-.profile-item:active {
-  opacity: 0.7;
 }
 
 .profile-item-left {
@@ -471,15 +409,6 @@ body {
 .profile-item-label {
   font-size: 15px;
   font-weight: 500;
-}
-
-.profile-item-value {
-  font-size: 13px;
-  color: var(--accent);
-}
-
-.profile-item-value.danger {
-  color: #EF4444;
 }
 
 .toggle-switch {
@@ -511,12 +440,16 @@ body {
   left: 22px;
 }
 
-/* Status List */
-.status-list {
+.danger-text {
+  color: #EF4444;
+}
+
+/* Status & Calls */
+.status-list, .call-list, .settings-list {
   padding: 16px;
 }
 
-.status-card {
+.status-card, .call-item {
   background: var(--bg-secondary);
   border-radius: 16px;
   padding: 16px;
@@ -527,11 +460,11 @@ body {
   border: 1px solid var(--border);
 }
 
-.status-avatar-small {
+.status-avatar-small, .call-avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  background: linear-gradient(135deg, #888, #666);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -539,13 +472,13 @@ body {
   color: white;
 }
 
-.status-info {
+.status-info, .call-info {
   flex: 1;
 }
 
-.status-name {
+.status-name, .call-name {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .status-text {
@@ -554,12 +487,13 @@ body {
   margin-top: 4px;
 }
 
-.status-time {
+.status-time, .call-type {
   font-size: 10px;
   color: var(--text-muted);
+  margin-top: 2px;
 }
 
-.add-status-btn {
+.add-status-btn, .call-btn, .settings-save-btn {
   background: var(--accent);
   color: white;
   border: none;
@@ -571,60 +505,12 @@ body {
   cursor: pointer;
 }
 
-/* Call List */
-.call-list {
-  padding: 16px;
-}
-
-.call-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.call-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: white;
-}
-
-.call-info {
-  flex: 1;
-}
-
-.call-name {
-  font-weight: 600;
-  font-size: 15px;
-}
-
-.call-type {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
 .call-btn {
-  background: var(--accent);
-  border: none;
+  margin: 0;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-/* Settings */
-.settings-list {
-  padding: 16px;
+  padding: 0;
 }
 
 .settings-item {
@@ -635,16 +521,6 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
-.settings-label {
-  font-weight: 500;
-  font-size: 15px;
-}
-
-.settings-value {
-  color: var(--text-secondary);
-  font-size: 13px;
-}
-
 .settings-item select, .settings-item input {
   padding: 8px 12px;
   border-radius: 8px;
@@ -653,41 +529,33 @@ body {
   color: var(--text-primary);
 }
 
-/* Bottom Navigation */
+/* Bottom Nav */
 .bottom-nav {
   background: var(--bg-primary);
   border-top: 1px solid var(--border);
   display: flex;
-  justify-content: space-around;
-  align-items: center;
   padding: 8px 12px;
   flex-shrink: 0;
 }
 
 .nav-item {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
   padding: 6px 0;
   cursor: pointer;
-  flex: 1;
-  border-radius: 8px;
-}
-
-.nav-item:active {
-  background: var(--bg-secondary);
 }
 
 .nav-icon {
   font-size: 22px;
-  color: #999999;
+  color: #999;
 }
 
 .nav-label {
   font-size: 10px;
-  color: #999999;
-  font-weight: 500;
+  color: #999;
 }
 
 .nav-item.active .nav-icon {
@@ -709,7 +577,7 @@ body {
   width: 200px;
   z-index: 200;
   display: none;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .dropdown-menu.show {
@@ -718,13 +586,8 @@ body {
 
 .dropdown-item {
   padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
   cursor: pointer;
   border-bottom: 1px solid var(--border);
-  font-size: 14px;
-  color: var(--text-primary);
 }
 
 .dropdown-item:last-child {
@@ -743,21 +606,19 @@ body {
   padding: 20px;
   z-index: 200;
   transform: translateY(100%);
-  transition: transform 0.3s ease;
-  box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+  transition: transform 0.3s;
 }
 
 .status-modal.open {
   transform: translateY(0);
 }
 
-.status-modal input, .status-modal textarea {
+.status-modal textarea {
   width: 100%;
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  font-size: 14px;
-  margin-bottom: 12px;
+  margin: 12px 0;
   background: var(--bg-secondary);
   color: var(--text-primary);
 }
@@ -783,10 +644,9 @@ body {
 
 .modal-cancel {
   background: var(--bg-secondary);
-  color: var(--text-secondary);
 }
 
-.panel-overlay {
+.overlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.5);
@@ -794,7 +654,7 @@ body {
   display: none;
 }
 
-.panel-overlay.show {
+.overlay.show {
   display: block;
 }
 </style>
@@ -803,15 +663,14 @@ body {
 
 <div class="app-container">
   
-  <div class="panel-overlay" id="panelOverlay"></div>
+  <div class="overlay" id="overlay"></div>
 
-  <!-- Status Modal -->
   <div class="status-modal" id="statusModal">
-    <h3 style="margin-bottom: 16px;">Update Your Status</h3>
-    <textarea id="statusTextInput" rows="3" placeholder="What's on your mind?"></textarea>
+    <h3>Update Status</h3>
+    <textarea id="statusInput" rows="3" placeholder="What's on your mind?"></textarea>
     <div class="modal-buttons">
-      <button class="modal-cancel" id="closeStatusModal">Cancel</button>
-      <button class="modal-save" id="saveStatusBtn">Post</button>
+      <button class="modal-cancel" id="cancelStatusBtn">Cancel</button>
+      <button class="modal-save" id="postStatusBtn">Post</button>
     </div>
   </div>
 
@@ -826,64 +685,45 @@ body {
         </div>
         <button class="menu-btn" id="menuBtn">⋮</button>
       </div>
-      
       <div class="dropdown-menu" id="dropdownMenu">
-        <div class="dropdown-item" id="dropSettings">⚙️ Settings</div>
-        <div class="dropdown-item" id="dropProfileGlobal">👤 My Profile</div>
-        <div class="dropdown-item" id="dropInvite">🔗 Invite Code</div>
-        <div class="dropdown-item" id="dropTheme">🎨 Theme</div>
+        <div class="dropdown-item" id="menuSettings">⚙️ Settings</div>
+        <div class="dropdown-item" id="menuInvite">🔗 Invite Friend</div>
       </div>
-      
       <div class="chat-list" id="chatList"></div>
     </div>
 
     <!-- Chat Detail Screen -->
     <div class="screen-chat" id="screenChat">
       <div class="chat-header">
-        <button class="back-btn" id="backBtn">←</button>
-        <div class="chat-header-avatar"><span id="chatAvatar">C</span></div>
+        <button class="back-btn" id="chatBackBtn">←</button>
+        <div class="chat-header-avatar" id="chatAvatar">C</div>
         <div class="chat-header-info">
           <div class="chat-header-name" id="chatName">Chiselda</div>
-          <div class="chat-header-status" id="chatStatus">last seen today at 21:16</div>
+          <div class="chat-header-status" id="chatStatus">Online</div>
         </div>
       </div>
-      
       <div class="messages-area" id="messagesArea">
-        <div class="date-divider"><span>Monday</span></div>
+        <div class="date-divider"><span>Today</span></div>
       </div>
-      
       <div class="input-area">
         <textarea class="message-input" id="messageInput" rows="1" placeholder="Type a message..."></textarea>
         <button class="send-btn" id="sendBtn">➤</button>
       </div>
     </div>
 
-    <!-- Profile Screen (when clicking on a contact) -->
+    <!-- Profile Screen -->
     <div class="screen-profile" id="screenProfile">
       <div class="profile-header">
         <button class="back-btn" id="profileBackBtn">←</button>
-        <div class="logo"><h1 style="font-size:18px;">Profile</h1></div>
-        <div style="width:36px"></div>
+        <div style="flex:1"></div>
       </div>
-      
       <div class="profile-avatar-large" id="profileAvatar">C</div>
       <div class="profile-name" id="profileName">Chiselda</div>
-      <div class="profile-status" id="profileStatus">last seen today at 21:16</div>
-      
-      <div class="profile-section">
-        <div class="profile-section-title">Media</div>
-        <div class="profile-item" id="viewMediaBtn">
-          <div class="profile-item-left">
-            <span class="profile-item-icon">🖼️</span>
-            <span class="profile-item-label">Shared Media</span>
-          </div>
-          <span class="profile-item-value">0 items →</span>
-        </div>
-      </div>
+      <div class="profile-status" id="profileStatus">Online</div>
       
       <div class="profile-section">
         <div class="profile-section-title">Privacy</div>
-        <div class="profile-item" id="muteNotificationsBtn">
+        <div class="profile-item" id="muteItem">
           <div class="profile-item-left">
             <span class="profile-item-icon">🔕</span>
             <span class="profile-item-label">Mute Notifications</span>
@@ -894,12 +734,12 @@ body {
       
       <div class="profile-section">
         <div class="profile-section-title">Chat</div>
-        <div class="profile-item" id="clearChatBtn">
+        <div class="profile-item" id="clearChatItem">
           <div class="profile-item-left">
             <span class="profile-item-icon">🗑️</span>
             <span class="profile-item-label">Clear Chat</span>
           </div>
-          <span class="profile-item-value danger">Clear →</span>
+          <span class="danger-text">Clear →</span>
         </div>
       </div>
     </div>
@@ -910,7 +750,7 @@ body {
         <div class="logo"><h1>UPDATES</h1><span>STATUS</span></div>
         <div style="width:44px"></div>
       </div>
-      <button class="add-status-btn" id="openStatusModalBtn">➕ Add Status Update</button>
+      <button class="add-status-btn" id="openStatusBtn">➕ Add Status Update</button>
       <div class="status-list" id="statusList"></div>
     </div>
 
@@ -921,27 +761,9 @@ body {
         <div style="width:44px"></div>
       </div>
       <div class="status-list">
-        <div class="status-card">
-          <div class="status-avatar-small">🌍</div>
-          <div class="status-info">
-            <div class="status-name">Global Goals</div>
-            <div class="status-text">1,234 members • 89 online</div>
-          </div>
-        </div>
-        <div class="status-card">
-          <div class="status-avatar-small">💻</div>
-          <div class="status-info">
-            <div class="status-name">Tech Talk</div>
-            <div class="status-text">567 members • 34 online</div>
-          </div>
-        </div>
-        <div class="status-card">
-          <div class="status-avatar-small">🎮</div>
-          <div class="status-info">
-            <div class="status-name">Gamers Hub</div>
-            <div class="status-text">2,101 members • 156 online</div>
-          </div>
-        </div>
+        <div class="status-card"><div class="status-avatar-small">🌍</div><div class="status-info"><div class="status-name">Global Goals</div><div class="status-text">1,234 members</div></div></div>
+        <div class="status-card"><div class="status-avatar-small">💻</div><div class="status-info"><div class="status-name">Tech Talk</div><div class="status-text">567 members</div></div></div>
+        <div class="status-card"><div class="status-avatar-small">🎮</div><div class="status-info"><div class="status-name">Gamers Hub</div><div class="status-text">2,101 members</div></div></div>
       </div>
     </div>
 
@@ -963,7 +785,7 @@ body {
       </div>
       <div class="settings-list">
         <div class="settings-item">
-          <span class="settings-label">Theme</span>
+          <span>Theme</span>
           <select id="themeSelect">
             <option value="light">Light</option>
             <option value="dark">Dark</option>
@@ -971,186 +793,84 @@ body {
           </select>
         </div>
         <div class="settings-item">
-          <span class="settings-label">Notifications</span>
-          <select id="notifySelect">
-            <option value="on">On</option>
-            <option value="off">Off</option>
-          </select>
-        </div>
-        <div class="settings-item">
-          <span class="settings-label">Message Timer</span>
-          <select id="timerSelect">
-            <option value="24h">24 hours</option>
-            <option value="7d">7 days</option>
-            <option value="off">Off</option>
-          </select>
-        </div>
-        <div class="settings-item">
-          <span class="settings-label">Username</span>
+          <span>Username</span>
           <input type="text" id="usernameInput" placeholder="Your name" value="Alex J.">
         </div>
-        <button class="add-status-btn" id="saveSettingsBtn" style="margin: 20px 0 0 0;">Save Settings</button>
+        <button class="add-status-btn" id="saveSettingsBtn" style="margin:20px 0 0 0">Save Settings</button>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Navigation -->
+  <!-- Bottom Nav -->
   <div class="bottom-nav">
-    <div class="nav-item active" data-screen="chats">
-      <div class="nav-icon">💬</div>
-      <div class="nav-label">Chats</div>
-    </div>
-    <div class="nav-item" data-screen="updates">
-      <div class="nav-icon">📢</div>
-      <div class="nav-label">Updates</div>
-    </div>
-    <div class="nav-item" data-screen="communities">
-      <div class="nav-icon">👥</div>
-      <div class="nav-label">Communities</div>
-    </div>
-    <div class="nav-item" data-screen="calls">
-      <div class="nav-icon">📞</div>
-      <div class="nav-label">Calls</div>
-    </div>
-    <div class="nav-item" data-screen="settings">
-      <div class="nav-icon">⚙️</div>
-      <div class="nav-label">Settings</div>
-    </div>
+    <div class="nav-item active" data-screen="chats"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
+    <div class="nav-item" data-screen="updates"><div class="nav-icon">📢</div><div class="nav-label">Updates</div></div>
+    <div class="nav-item" data-screen="communities"><div class="nav-icon">👥</div><div class="nav-label">Communities</div></div>
+    <div class="nav-item" data-screen="calls"><div class="nav-icon">📞</div><div class="nav-label">Calls</div></div>
+    <div class="nav-item" data-screen="settings"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
   </div>
 </div>
 
 <script>
-// Demo data
-const demoChats = [
-  { id: 1, name: "Chiselda", lastMessage: "Hey! How are you?", time: "21:16", unread: 2, avatar: "C", status: "last seen today at 21:16", muted: false },
-  { id: 2, name: "Sarah Chen", lastMessage: "Thanks for the update", time: "9:15 AM", unread: 0, avatar: "S", status: "Online", muted: false },
-  { id: 3, name: "Mike Johnson", lastMessage: "Love the app! 😊", time: "Yesterday", unread: 0, avatar: "M", status: "last seen yesterday", muted: false },
-  { id: 4, name: "Emily Davis", lastMessage: "See you tomorrow", time: "Yesterday", unread: 1, avatar: "E", status: "Online", muted: false }
+// Chat data
+let chats = [
+  { id: 1, name: "Chiselda", avatar: "C", status: "Online", lastMessage: "Hey! How are you?", time: "21:16", unread: 2, muted: false },
+  { id: 2, name: "Sarah Chen", avatar: "S", status: "Online", lastMessage: "Thanks for the update", time: "9:15 AM", unread: 0, muted: false },
+  { id: 3, name: "Mike Johnson", avatar: "M", status: "Last seen yesterday", lastMessage: "Love the app! 😊", time: "Yesterday", unread: 0, muted: false },
+  { id: 4, name: "Emily Davis", avatar: "E", status: "Online", lastMessage: "See you tomorrow", time: "Yesterday", unread: 1, muted: false }
 ];
 
-let messagesData = {
-  1: [{ text: "Hey! How are you?", sent: false, time: "21:10" }, { text: "I'm good! Working on JUSTUS", sent: true, time: "21:12" }, { text: "Nice! Keep it up 🔥", sent: false, time: "21:15" }],
+let messages = {
+  1: [{ text: "Hey! How are you?", sent: false, time: "21:10" }, { text: "I'm good!", sent: true, time: "21:12" }],
   2: [{ text: "Thanks for the update", sent: false, time: "9:10 AM" }],
   3: [{ text: "Love the app! 😊", sent: false, time: "Yesterday" }],
   4: [{ text: "See you tomorrow", sent: false, time: "Yesterday" }]
 };
 
 let statuses = [
-  { name: "Alex J.", text: "Working on JUSTUS app! 🚀", time: "2 hours ago", avatar: "AJ" },
-  { name: "Sarah Chen", text: "Beautiful day outside ☀️", time: "5 hours ago", avatar: "S" },
-  { name: "Mike Johnson", text: "New music dropped! 🎵", time: "Yesterday", avatar: "M" }
+  { name: "Alex J.", text: "Working on JUSTUS! 🚀", time: "2 hours ago", avatar: "A" },
+  { name: "Sarah Chen", text: "Beautiful day ☀️", time: "5 hours ago", avatar: "S" }
 ];
 
 let calls = [
-  { name: "Chiselda", type: "Missed Call", time: "Yesterday", avatar: "C" },
-  { name: "Sarah Chen", type: "Incoming", time: "2 days ago", avatar: "S" },
-  { name: "Mike Johnson", type: "Outgoing", time: "3 days ago", avatar: "M" }
+  { name: "Chiselda", type: "Missed", time: "Yesterday", avatar: "C" },
+  { name: "Sarah Chen", type: "Incoming", time: "2 days ago", avatar: "S" }
 ];
 
-let currentChatId = null;
-let currentProfileChatId = null;
+let currentChatId = 1;
+let currentProfileId = null;
 
 // Load saved data
-function loadSavedData() {
+function loadData() {
+  const savedTheme = localStorage.getItem('justus_theme');
+  if (savedTheme) {
+    document.body.className = savedTheme;
+    document.getElementById('themeSelect').value = savedTheme;
+  }
+  const savedUsername = localStorage.getItem('justus_username');
+  if (savedUsername) document.getElementById('usernameInput').value = savedUsername;
+  
   const savedStatuses = localStorage.getItem('justus_statuses');
   if (savedStatuses) statuses = JSON.parse(savedStatuses);
   
   const savedCalls = localStorage.getItem('justus_calls');
   if (savedCalls) calls = JSON.parse(savedCalls);
   
-  const savedUsername = localStorage.getItem('justus_username');
-  if (savedUsername) document.getElementById('usernameInput').value = savedUsername;
-  
-  const savedTheme = localStorage.getItem('justus_theme');
-  if (savedTheme) {
-    document.getElementById('themeSelect').value = savedTheme;
-    document.body.className = savedTheme;
-  }
-  
-  const savedNotify = localStorage.getItem('justus_notify');
-  if (savedNotify) document.getElementById('notifySelect').value = savedNotify;
-  
-  const savedTimer = localStorage.getItem('justus_timer');
-  if (savedTimer) document.getElementById('timerSelect').value = savedTimer;
-  
-  // Load mute status for each chat
-  demoChats.forEach(chat => {
+  chats.forEach(chat => {
     const muted = localStorage.getItem(`muted_${chat.id}`);
     if (muted) chat.muted = muted === 'true';
   });
 }
 
-function renderStatusList() {
-  const container = document.getElementById('statusList');
-  container.innerHTML = statuses.map(status => `
-    <div class="status-card">
-      <div class="status-avatar-small">${status.avatar}</div>
-      <div class="status-info">
-        <div class="status-name">${status.name}</div>
-        <div class="status-text">${status.text}</div>
-        <div class="status-time">${status.time}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderCallList() {
-  const container = document.getElementById('callList');
-  container.innerHTML = calls.map(call => `
-    <div class="call-item">
-      <div class="call-avatar">${call.avatar}</div>
-      <div class="call-info">
-        <div class="call-name">${call.name}</div>
-        <div class="call-type">${call.type}</div>
-        <div class="call-time">${call.time}</div>
-      </div>
-      <button class="call-btn" data-call-name="${call.name}">📞</button>
-    </div>
-  `).join('');
-  
-  document.querySelectorAll('.call-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      alert(`📞 Calling ${btn.dataset.callName}...\n\n(This is a demo. Real calling coming soon!)`);
-      // Add to call history
-      calls.unshift({ name: btn.dataset.callName, type: "Outgoing", time: "Just now", avatar: btn.dataset.callName.charAt(0) });
-      localStorage.setItem('justus_calls', JSON.stringify(calls.slice(0, 10)));
-      renderCallList();
-    });
-  });
-}
-
-function showScreen(screenName) {
-  document.getElementById('screenChats').classList.remove('show');
-  document.getElementById('screenChat').classList.remove('show');
-  document.getElementById('screenUpdates').classList.remove('show');
-  document.getElementById('screenCommunities').classList.remove('show');
-  document.getElementById('screenCalls').classList.remove('show');
-  document.getElementById('screenSettings').classList.remove('show');
-  document.getElementById('screenProfile').classList.remove('show');
-  
-  const screenMap = {
-    'chats': 'screenChats',
-    'chat': 'screenChat',
-    'updates': 'screenUpdates',
-    'communities': 'screenCommunities',
-    'calls': 'screenCalls',
-    'settings': 'screenSettings',
-    'profile': 'screenProfile'
-  };
-  
-  if (screenMap[screenName]) {
-    document.getElementById(screenMap[screenName]).classList.add('show');
-  }
-  
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-    if (item.dataset.screen === screenName) item.classList.add('active');
+function saveChats() {
+  chats.forEach(chat => {
+    localStorage.setItem(`muted_${chat.id}`, chat.muted);
   });
 }
 
 function renderChatList() {
   const container = document.getElementById('chatList');
-  container.innerHTML = demoChats.map(chat => `
+  container.innerHTML = chats.map(chat => `
     <div class="chat-item" data-id="${chat.id}">
       <div class="chat-avatar-img">${chat.avatar}</div>
       <div class="chat-info">
@@ -1166,33 +886,35 @@ function renderChatList() {
   
   document.querySelectorAll('.chat-item').forEach(item => {
     item.addEventListener('click', () => openChat(parseInt(item.dataset.id)));
+    item.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      openProfile(parseInt(item.dataset.id));
+      return false;
+    });
   });
 }
 
 function openChat(chatId) {
   currentChatId = chatId;
-  const chat = demoChats.find(c => c.id === chatId);
-  if (!chat) return;
+  const chat = chats.find(c => c.id === chatId);
+  document.getElementById('chatName').innerText = chat.name;
+  document.getElementById('chatAvatar').innerText = chat.avatar;
+  document.getElementById('chatStatus').innerText = chat.status;
   
-  document.getElementById('chatName').textContent = chat.name;
-  document.getElementById('chatAvatar').textContent = chat.avatar;
-  document.getElementById('chatStatus').textContent = chat.status;
-  
-  const messages = messagesData[chatId] || [];
-  const container = document.getElementById('messagesArea');
-  
-  if (messages.length === 0) {
-    container.innerHTML = '<div class="date-divider"><span>Monday</span></div><div style="text-align:center;color:var(--text-muted);padding:20px">✨ No messages yet</div>';
+  const msgContainer = document.getElementById('messagesArea');
+  const msgs = messages[chatId] || [];
+  if (msgs.length === 0) {
+    msgContainer.innerHTML = '<div class="date-divider"><span>Today</span></div><div style="text-align:center;padding:20px">No messages yet</div>';
   } else {
-    let html = '<div class="date-divider"><span>Monday</span></div>';
-    html += messages.map(msg => `
-      <div class="message ${msg.sent ? 'sent' : 'received'}">
-        <div class="message-bubble">${msg.text}<div class="message-meta"><span>${msg.time}</span> ${msg.sent ? '✓✓' : ''}</div></div>
-      </div>
-    `).join('');
-    container.innerHTML = html;
+    let html = '<div class="date-divider"><span>Today</span></div>';
+    msgs.forEach(msg => {
+      html += `<div class="message ${msg.sent ? 'sent' : 'received'}">
+        <div class="message-bubble">${msg.text}<div class="message-meta"><span>${msg.time}</span></div></div>
+      </div>`;
+    });
+    msgContainer.innerHTML = html;
   }
-  container.scrollTop = container.scrollHeight;
+  msgContainer.scrollTop = msgContainer.scrollHeight;
   
   chat.unread = 0;
   renderChatList();
@@ -1200,210 +922,170 @@ function openChat(chatId) {
 }
 
 function openProfile(chatId) {
-  currentProfileChatId = chatId;
-  const chat = demoChats.find(c => c.id === chatId);
-  if (!chat) return;
-  
-  document.getElementById('profileAvatar').textContent = chat.avatar;
-  document.getElementById('profileName').textContent = chat.name;
-  document.getElementById('profileStatus').textContent = chat.status;
+  currentProfileId = chatId;
+  const chat = chats.find(c => c.id === chatId);
+  document.getElementById('profileAvatar').innerText = chat.avatar;
+  document.getElementById('profileName').innerText = chat.name;
+  document.getElementById('profileStatus').innerText = chat.status;
   
   const muteToggle = document.getElementById('muteToggle');
-  if (chat.muted) {
-    muteToggle.classList.add('active');
-  } else {
-    muteToggle.classList.remove('active');
-  }
+  if (chat.muted) muteToggle.classList.add('active');
+  else muteToggle.classList.remove('active');
   
   showScreen('profile');
+}
+
+function toggleMute() {
+  if (!currentProfileId) return;
+  const chat = chats.find(c => c.id === currentProfileId);
+  chat.muted = !chat.muted;
+  localStorage.setItem(`muted_${chat.id}`, chat.muted);
+  const muteToggle = document.getElementById('muteToggle');
+  if (chat.muted) muteToggle.classList.add('active');
+  else muteToggle.classList.remove('active');
+  renderChatList();
+}
+
+function clearChat() {
+  if (!currentProfileId) return;
+  if (confirm('Clear all messages in this chat?')) {
+    messages[currentProfileId] = [];
+    if (currentChatId === currentProfileId) {
+      document.getElementById('messagesArea').innerHTML = '<div class="date-divider"><span>Today</span></div><div style="text-align:center;padding:20px">No messages yet</div>';
+    }
+    alert('Chat cleared!');
+  }
 }
 
 function sendMessage() {
   const input = document.getElementById('messageInput');
   const text = input.value.trim();
-  if (!text || !currentChatId) return;
+  if (!text) return;
+  
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  if (!messages[currentChatId]) messages[currentChatId] = [];
+  messages[currentChatId].push({ text: text, sent: true, time: time });
   
   const container = document.getElementById('messagesArea');
-  if (container.innerHTML.includes('No messages yet')) container.innerHTML = '<div class="date-divider"><span>Monday</span></div>';
-  
-  const now = new Date();
-  const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
-  
-  const newMsg = document.createElement('div');
-  newMsg.className = 'message sent';
-  newMsg.innerHTML = `<div class="message-bubble">${text}<div class="message-meta"><span>${timeStr}</span> ✓✓</div></div>`;
-  container.appendChild(newMsg);
+  if (container.innerHTML.includes('No messages yet')) container.innerHTML = '<div class="date-divider"><span>Today</span></div>';
+  container.innerHTML += `<div class="message sent"><div class="message-bubble">${text}<div class="message-meta"><span>${time}</span> ✓✓</div></div></div>`;
   container.scrollTop = container.scrollHeight;
   input.value = '';
-  
-  if (!messagesData[currentChatId]) messagesData[currentChatId] = [];
-  messagesData[currentChatId].push({ text: text, sent: true, time: timeStr });
-  
-  setTimeout(() => {
-    const reply = document.createElement('div');
-    reply.className = 'message received';
-    reply.innerHTML = `<div class="message-bubble">🔒 Received on JUSTUS<div class="message-meta"><span>${timeStr}</span></div></div>`;
-    container.appendChild(reply);
-    container.scrollTop = container.scrollHeight;
-    messagesData[currentChatId].push({ text: "🔒 Received on JUSTUS", sent: false, time: timeStr });
-  }, 1000);
 }
 
-function clearChat() {
-  if (!currentProfileChatId) return;
-  if (confirm('Are you sure you want to clear all messages in this chat?')) {
-    messagesData[currentProfileChatId] = [];
-    if (currentChatId === currentProfileChatId) {
-      const container = document.getElementById('messagesArea');
-      container.innerHTML = '<div class="date-divider"><span>Monday</span></div><div style="text-align:center;color:var(--text-muted);padding:20px">✨ No messages yet</div>';
-    }
-    alert('✅ Chat cleared successfully!');
-  }
-}
-
-function toggleMute() {
-  if (!currentProfileChatId) return;
-  const chat = demoChats.find(c => c.id === currentProfileChatId);
-  if (chat) {
-    chat.muted = !chat.muted;
-    localStorage.setItem(`muted_${chat.id}`, chat.muted);
-    const muteToggle = document.getElementById('muteToggle');
-    if (chat.muted) {
-      muteToggle.classList.add('active');
-      alert(`🔕 Notifications muted for ${chat.name}`);
-    } else {
-      muteToggle.classList.remove('active');
-      alert(`🔔 Notifications unmuted for ${chat.name}`);
-    }
-    renderChatList();
-  }
+function renderStatusList() {
+  const container = document.getElementById('statusList');
+  container.innerHTML = statuses.map(s => `
+    <div class="status-card">
+      <div class="status-avatar-small">${s.avatar}</div>
+      <div class="status-info">
+        <div class="status-name">${s.name}</div>
+        <div class="status-text">${s.text}</div>
+        <div class="status-time">${s.time}</div>
+      </div>
+    </div>
+  `).join('');
 }
 
 function addStatus() {
-  const text = document.getElementById('statusTextInput').value.trim();
-  if (!text) {
-    alert("Please write something for your status!");
-    return;
-  }
-  
-  const savedUsername = localStorage.getItem('justus_username') || "Alex J.";
-  const now = new Date();
-  const timeStr = "Just now";
-  const avatar = savedUsername.charAt(0).toUpperCase();
-  
-  statuses.unshift({ name: savedUsername, text: text, time: timeStr, avatar: avatar });
+  const text = document.getElementById('statusInput').value.trim();
+  if (!text) return;
+  const username = localStorage.getItem('justus_username') || 'Alex J.';
+  statuses.unshift({ name: username, text: text, time: 'Just now', avatar: username.charAt(0) });
   localStorage.setItem('justus_statuses', JSON.stringify(statuses));
-  
-  document.getElementById('statusModal').classList.remove('open');
-  document.getElementById('panelOverlay').classList.remove('show');
-  document.getElementById('statusTextInput').value = '';
   renderStatusList();
-  alert("✅ Status updated successfully!");
+  document.getElementById('statusModal').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('statusInput').value = '';
+  alert('Status posted!');
+}
+
+function renderCallList() {
+  const container = document.getElementById('callList');
+  container.innerHTML = calls.map(c => `
+    <div class="call-item">
+      <div class="call-avatar">${c.avatar}</div>
+      <div class="call-info">
+        <div class="call-name">${c.name}</div>
+        <div class="call-type">${c.type}</div>
+        <div class="status-time">${c.time}</div>
+      </div>
+      <button class="call-btn" data-name="${c.name}">📞</button>
+    </div>
+  `).join('');
+  
+  document.querySelectorAll('.call-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.dataset.name;
+      calls.unshift({ name: name, type: 'Outgoing', time: 'Just now', avatar: name.charAt(0) });
+      localStorage.setItem('justus_calls', JSON.stringify(calls.slice(0, 20)));
+      renderCallList();
+      alert(`Calling ${name}...`);
+    });
+  });
 }
 
 function saveSettings() {
-  const username = document.getElementById('usernameInput').value;
   const theme = document.getElementById('themeSelect').value;
-  const notifications = document.getElementById('notifySelect').value;
-  const timer = document.getElementById('timerSelect').value;
-  
-  localStorage.setItem('justus_username', username);
+  const username = document.getElementById('usernameInput').value;
   localStorage.setItem('justus_theme', theme);
-  localStorage.setItem('justus_notify', notifications);
-  localStorage.setItem('justus_timer', timer);
-  
+  localStorage.setItem('justus_username', username);
   document.body.className = theme;
-  
-  alert("✅ Settings saved successfully!");
+  alert('Settings saved!');
 }
 
-// Event Listeners
+function showScreen(screen) {
+  document.querySelectorAll('.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile').forEach(s => s.classList.remove('show'));
+  document.getElementById(`screen${screen.charAt(0).toUpperCase() + screen.slice(1)}`).classList.add('show');
+  
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.dataset.screen === screen) item.classList.add('active');
+  });
+  
+  if (screen === 'updates') renderStatusList();
+  if (screen === 'calls') renderCallList();
+}
+
+// Event listeners
 document.getElementById('sendBtn').addEventListener('click', sendMessage);
 document.getElementById('messageInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
 });
-document.getElementById('backBtn').addEventListener('click', () => showScreen('chats'));
+document.getElementById('chatBackBtn').addEventListener('click', () => showScreen('chats'));
 document.getElementById('profileBackBtn').addEventListener('click', () => showScreen('chats'));
 document.getElementById('settingsBackBtn').addEventListener('click', () => showScreen('chats'));
+document.getElementById('muteItem').addEventListener('click', toggleMute);
+document.getElementById('clearChatItem').addEventListener('click', clearChat);
+document.getElementById('openStatusBtn').addEventListener('click', () => {
+  document.getElementById('statusModal').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+});
+document.getElementById('cancelStatusBtn').addEventListener('click', () => {
+  document.getElementById('statusModal').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+});
+document.getElementById('postStatusBtn').addEventListener('click', addStatus);
+document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+document.getElementById('overlay').addEventListener('click', () => {
+  document.getElementById('statusModal').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+});
 
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => showScreen(item.dataset.screen));
 });
 
-// Profile actions
-document.getElementById('clearChatBtn')?.addEventListener('click', clearChat);
-document.getElementById('muteToggle')?.addEventListener('click', toggleMute);
-document.getElementById('viewMediaBtn')?.addEventListener('click', () => alert('🖼️ Shared Media\n\nNo media shared yet. Send photos to see them here!'));
-
-// Status modal
-document.getElementById('openStatusModalBtn')?.addEventListener('click', () => {
-  document.getElementById('statusModal').classList.add('open');
-  document.getElementById('panelOverlay').classList.add('show');
-});
-document.getElementById('closeStatusModal')?.addEventListener('click', () => {
-  document.getElementById('statusModal').classList.remove('open');
-  document.getElementById('panelOverlay').classList.remove('show');
-});
-document.getElementById('saveStatusBtn')?.addEventListener('click', addStatus);
-document.getElementById('panelOverlay')?.addEventListener('click', () => {
-  document.getElementById('statusModal').classList.remove('open');
-  document.getElementById('panelOverlay').classList.remove('show');
-});
-
-// Settings save
-document.getElementById('saveSettingsBtn')?.addEventListener('click', saveSettings);
-
-// Dropdown
+// Menu dropdown
 const menuBtn = document.getElementById('menuBtn');
-const dropdownMenu = document.getElementById('dropdownMenu');
-menuBtn?.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
-document.addEventListener('click', () => dropdownMenu?.classList.remove('show'));
-
-document.getElementById('dropSettings')?.addEventListener('click', () => { dropdownMenu.classList.remove('show'); showScreen('settings'); });
-document.getElementById('dropProfileGlobal')?.addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('👤 My Profile\n\nUsername: ' + (localStorage.getItem('justus_username') || 'Alex J.') + '\n@JUSTUS\n🔒 End-to-end encrypted'); });
-document.getElementById('dropInvite')?.addEventListener('click', () => { dropdownMenu.classList.remove('show'); alert('🔐 Invite Code: JUSTUS2024\n\nShare with friends to join JUSTUS!'); });
-document.getElementById('dropTheme')?.addEventListener('click', () => { dropdownMenu.classList.remove('show'); showScreen('settings'); });
-
-// Add profile click to chat items
-function addProfileClickListener() {
-  const chatItems = document.querySelectorAll('.chat-item');
-  chatItems.forEach(item => {
-    const originalClick = item.onclick;
-    item.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      const chatId = parseInt(item.dataset.id);
-      openProfile(chatId);
-      return false;
-    });
-  });
-}
-
-// Override chat item click to add long-press for profile
-document.addEventListener('DOMContentLoaded', () => {
-  let pressTimer;
-  let currentItemId;
-  
-  document.getElementById('chatList')?.addEventListener('touchstart', (e) => {
-    const item = e.target.closest('.chat-item');
-    if (item) {
-      currentItemId = parseInt(item.dataset.id);
-      pressTimer = setTimeout(() => {
-        openProfile(currentItemId);
-      }, 500);
-    }
-  });
-  
-  document.getElementById('chatList')?.addEventListener('touchend', () => {
-    clearTimeout(pressTimer);
-  });
-  
-  document.getElementById('chatList')?.addEventListener('touchmove', () => {
-    clearTimeout(pressTimer);
-  });
-});
+const dropdown = document.getElementById('dropdownMenu');
+menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); });
+document.addEventListener('click', () => dropdown.classList.remove('show'));
+document.getElementById('menuSettings').addEventListener('click', () => { dropdown.classList.remove('show'); showScreen('settings'); });
+document.getElementById('menuInvite').addEventListener('click', () => { dropdown.classList.remove('show'); alert('Invite code: JUSTUS2024'); });
 
 // Initialize
-loadSavedData();
+loadData();
 renderChatList();
 renderStatusList();
 renderCallList();

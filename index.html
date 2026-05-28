@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>JUSTUS • Private Chat</title>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 <style>
 * {
   margin: 0;
@@ -20,12 +25,15 @@ body {
   --text-secondary: #666666;
   --text-muted: #999999;
   --border: #e0e0e0;
-  --accent: #888888;
-  --accent-dark: #666666;
+  --accent: #075E54;
+  --accent-light: #DCF8C6;
   --sent-msg: #DCF8C6;
   --received-msg: #ffffff;
   --header-bg: #075E54;
   --header-text: white;
+  --avatar-grad-start: #d4ede0;
+  --avatar-grad-end: #aed5be;
+  --avatar-text: #2d5a3f;
 }
 
 body.dark {
@@ -36,10 +44,13 @@ body.dark {
   --text-secondary: #bbbbbb;
   --text-muted: #888888;
   --border: #444444;
-  --accent: #888888;
+  --accent: #075E54;
   --sent-msg: #075E54;
   --received-msg: #2a2a2a;
   --header-bg: #111111;
+  --avatar-grad-start: #3d7a55;
+  --avatar-grad-end: #2d5a3f;
+  --avatar-text: #e0f0e6;
 }
 
 body.oled {
@@ -50,10 +61,13 @@ body.oled {
   --text-secondary: #aaaaaa;
   --text-muted: #666666;
   --border: #222222;
-  --accent: #888888;
+  --accent: #075E54;
   --sent-msg: #075E54;
   --received-msg: #111111;
   --header-bg: #000000;
+  --avatar-grad-start: #2d5a3f;
+  --avatar-grad-end: #1e3d2a;
+  --avatar-text: #d4ede0;
 }
 
 body {
@@ -82,15 +96,82 @@ body {
 }
 
 /* Screens */
-.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile, .screen-help {
+.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile, .screen-help, .screen-auth {
   display: none;
   flex-direction: column;
   height: 100%;
 }
 
 .screen-chats.show, .screen-chat.show, .screen-updates.show, 
-.screen-communities.show, .screen-calls.show, .screen-settings.show, .screen-profile.show, .screen-help.show {
+.screen-communities.show, .screen-calls.show, .screen-settings.show, .screen-profile.show, .screen-help.show, .screen-auth.show {
   display: flex;
+}
+
+/* Auth Screen */
+.auth-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--bg-primary);
+}
+
+.auth-card {
+  background: var(--bg-secondary);
+  border-radius: 28px;
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid var(--border);
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: var(--accent);
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.auth-toggle {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.auth-toggle span {
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.auth-error {
+  color: #EF4444;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 12px;
 }
 
 /* Header */
@@ -160,13 +241,13 @@ body {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d4ede0, #aed5be);
+  background: linear-gradient(135deg, var(--avatar-grad-start), var(--avatar-grad-end));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   font-weight: bold;
-  color: #3d7a55;
+  color: var(--avatar-text);
   flex-shrink: 0;
 }
 
@@ -208,8 +289,8 @@ body {
   width: 50px;
   height: 50px;
   font-size: 20px;
-  background: linear-gradient(135deg, #d4ede0, #aed5be);
-  color: #3d7a55;
+  background: linear-gradient(135deg, var(--avatar-grad-start), var(--avatar-grad-end));
+  color: var(--avatar-text);
 }
 
 .chat-info {
@@ -286,6 +367,7 @@ body {
 .message.sent .message-bubble {
   background: var(--sent-msg);
   border-bottom-right-radius: 4px;
+  color: #111;
 }
 
 .message.received .message-bubble {
@@ -352,13 +434,13 @@ body {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d4ede0, #aed5be);
+  background: linear-gradient(135deg, var(--avatar-grad-start), var(--avatar-grad-end));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 48px;
   font-weight: bold;
-  color: #3d7a55;
+  color: var(--avatar-text);
   margin: 30px auto 20px;
 }
 
@@ -408,11 +490,6 @@ body {
   width: 32px;
 }
 
-.profile-item-label {
-  font-size: 15px;
-  font-weight: 500;
-}
-
 .toggle-switch {
   width: 44px;
   height: 24px;
@@ -442,12 +519,8 @@ body {
   left: 22px;
 }
 
-.danger-text {
-  color: #EF4444;
-}
-
 /* Status & Calls */
-.status-list, .call-list, .settings-list {
+.status-list, .call-list {
   padding: 16px;
 }
 
@@ -466,36 +539,15 @@ body {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d4ede0, #aed5be);
+  background: linear-gradient(135deg, var(--avatar-grad-start), var(--avatar-grad-end));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  color: #3d7a55;
+  color: var(--avatar-text);
 }
 
-.status-info, .call-info {
-  flex: 1;
-}
-
-.status-name, .call-name {
-  font-weight: 600;
-  font-size: 15px;
-}
-
-.status-text {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-.status-time, .call-type {
-  font-size: 10px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.add-status-btn, .call-btn, .settings-save-btn {
+.add-status-btn, .call-btn {
   background: var(--accent);
   color: white;
   border: none;
@@ -515,23 +567,7 @@ body {
   padding: 0;
 }
 
-.settings-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.settings-item select, .settings-item input {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-/* New Settings Layout */
+/* Settings Screen */
 .settings-body {
   flex: 1;
   overflow-y: auto;
@@ -555,10 +591,6 @@ body {
   border-bottom: 1px solid var(--border);
   background: var(--bg-primary);
   cursor: pointer;
-}
-
-.settings-row:active {
-  background: var(--bg-secondary);
 }
 
 .settings-row-left {
@@ -587,10 +619,6 @@ body {
   cursor: default;
 }
 
-.settings-row-inline:active {
-  background: var(--bg-primary);
-}
-
 .settings-row-inline select,
 .settings-row-inline input {
   padding: 7px 10px;
@@ -616,7 +644,7 @@ body {
   cursor: pointer;
 }
 
-/* ── Help Screen ── */
+/* Help Screen */
 .help-body {
   flex: 1;
   overflow-y: auto;
@@ -646,63 +674,14 @@ body {
   color: white;
   font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   padding: 12px 14px;
   text-align: left;
-}
-
-.help-table tbody tr {
-  border-bottom: 1px solid var(--border);
-}
-
-.help-table tbody tr:last-child {
-  border-bottom: none;
-}
-
-.help-table tbody tr:nth-child(even) {
-  background: var(--bg-secondary);
-}
-
-.help-table tbody tr:nth-child(odd) {
-  background: var(--bg-primary);
 }
 
 .help-table td {
   padding: 13px 14px;
   font-size: 13px;
-  vertical-align: top;
-  line-height: 1.45;
-}
-
-.help-table td:first-child {
-  font-weight: 700;
-  color: var(--text-primary);
-  width: 38%;
-  white-space: nowrap;
-}
-
-.help-table td:last-child {
-  color: var(--text-secondary);
-}
-
-.help-tip {
-  margin-top: 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-left: 3px solid #075E54;
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.help-tip strong {
-  color: var(--text-primary);
-  display: block;
-  margin-bottom: 4px;
-  font-size: 12px;
+  border-bottom: 1px solid var(--border);
 }
 
 /* Bottom Nav */
@@ -734,11 +713,7 @@ body {
   color: #999;
 }
 
-.nav-item.active .nav-icon {
-  color: var(--accent);
-}
-
-.nav-item.active .nav-label {
+.nav-item.active .nav-icon, .nav-item.active .nav-label {
   color: var(--accent);
 }
 
@@ -753,22 +728,10 @@ body {
   width: 200px;
   z-index: 200;
   display: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.dropdown-menu.show {
-  display: block;
-}
-
-.dropdown-item {
-  padding: 12px 16px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-}
-
-.dropdown-item:last-child {
-  border-bottom: none;
-}
+.dropdown-menu.show { display: block; }
+.dropdown-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--border); }
 
 /* Modal */
 .status-modal {
@@ -784,591 +747,244 @@ body {
   transform: translateY(100%);
   transition: transform 0.3s;
 }
-
-.status-modal.open {
-  transform: translateY(0);
-}
-
-.status-modal textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  margin: 12px 0;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-.modal-buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.modal-buttons button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.modal-save {
-  background: var(--accent);
-  color: white;
-}
-
-.modal-cancel {
-  background: var(--bg-secondary);
-}
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 99;
-  display: none;
-}
-
-.overlay.show {
-  display: block;
-}
+.status-modal.open { transform: translateY(0); }
+.status-modal textarea { width: 100%; padding: 12px; border-radius: 12px; margin: 12px 0; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); }
+.modal-buttons { display: flex; gap: 12px; }
+.modal-save { background: var(--accent); color: white; padding: 12px; border: none; border-radius: 12px; flex:1; }
+.modal-cancel { background: var(--bg-secondary); padding: 12px; border: none; border-radius: 12px; flex:1; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; }
+.overlay.show { display: block; }
 </style>
 </head>
 <body>
 
 <div class="app-container">
   
-  <div class="overlay" id="overlay"></div>
-
-  <div class="status-modal" id="statusModal">
-    <h3>Update Status</h3>
-    <textarea id="statusInput" rows="3" placeholder="What's on your mind?"></textarea>
-    <div class="modal-buttons">
-      <button class="modal-cancel" id="cancelStatusBtn">Cancel</button>
-      <button class="modal-save" id="postStatusBtn">Post</button>
+  <!-- Auth Screen -->
+  <div class="screen-auth show" id="screenAuth">
+    <div class="auth-container">
+      <div class="auth-card">
+        <h2>🔒 JUSTUS</h2>
+        <div class="auth-error" id="authError"></div>
+        <input type="email" id="authEmail" class="auth-input" placeholder="Email" autocomplete="email">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Password">
+        <input type="text" id="authName" class="auth-input" placeholder="Display Name" style="display:none">
+        <button class="auth-btn" id="authBtn">Sign In</button>
+        <div class="auth-toggle"><span id="authToggle">Create Account</span></div>
+      </div>
     </div>
   </div>
 
-  <div class="main-content">
-    
-    <!-- Chats Screen -->
-    <div class="screen-chats show" id="screenChats">
-      <div class="header">
-        <div class="logo">
-          <h1>JUSTUS</h1>
-          <span>🔒 PRIVATE & SECURE</span>
-        </div>
-        <button class="menu-btn" id="menuBtn">⋮</button>
-      </div>
-      <div class="dropdown-menu" id="dropdownMenu">
-        <div class="dropdown-item" id="menuSettings">⚙️ Settings</div>
-        <div class="dropdown-item" id="menuHelp">❓ Help</div>
-        <div class="dropdown-item" id="menuInvite">🔗 Invite Friend</div>
-      </div>
-      <div class="chat-list" id="chatList"></div>
+  <!-- Main App Screens -->
+  <div class="screen-chats" id="screenChats">
+    <div class="header">
+      <div class="logo"><h1>JUSTUS</h1><span>🔒 PRIVATE & SECURE</span></div>
+      <button class="menu-btn" id="menuBtn">⋮</button>
     </div>
-
-    <!-- Chat Detail Screen -->
-    <div class="screen-chat" id="screenChat">
-      <div class="chat-header">
-        <button class="back-btn" id="chatBackBtn">←</button>
-        <div class="chat-header-avatar" id="chatAvatar">C</div>
-        <div class="chat-header-info">
-          <div class="chat-header-name" id="chatName">Chiselda</div>
-          <div class="chat-header-status" id="chatStatus">Online</div>
-        </div>
-      </div>
-      <div class="messages-area" id="messagesArea">
-        <div class="date-divider"><span>Today</span></div>
-      </div>
-      <div class="input-area">
-        <textarea class="message-input" id="messageInput" rows="1" placeholder="Type a message..."></textarea>
-        <button class="send-btn" id="sendBtn">➤</button>
-      </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+      <div class="dropdown-item" id="menuSettings">⚙️ Settings</div>
+      <div class="dropdown-item" id="menuHelp">❓ Help</div>
+      <div class="dropdown-item" id="menuInvite">🔗 Invite Friend</div>
+      <div class="dropdown-item" id="menuLogout">🚪 Logout</div>
     </div>
-
-    <!-- Profile Screen -->
-    <div class="screen-profile" id="screenProfile">
-      <div class="profile-header">
-        <button class="back-btn" id="profileBackBtn">←</button>
-        <div style="flex:1"></div>
-      </div>
-      <div class="profile-avatar-large" id="profileAvatar">C</div>
-      <div class="profile-name" id="profileName">Chiselda</div>
-      <div class="profile-status" id="profileStatus">Online</div>
-      
-      <div class="profile-section">
-        <div class="profile-section-title">Privacy</div>
-        <div class="profile-item" id="muteItem">
-          <div class="profile-item-left">
-            <span class="profile-item-icon">🔕</span>
-            <span class="profile-item-label">Mute Notifications</span>
-          </div>
-          <div class="toggle-switch" id="muteToggle"></div>
-        </div>
-      </div>
-      
-      <div class="profile-section">
-        <div class="profile-section-title">Chat</div>
-        <div class="profile-item" id="clearChatItem">
-          <div class="profile-item-left">
-            <span class="profile-item-icon">🗑️</span>
-            <span class="profile-item-label">Clear Chat</span>
-          </div>
-          <span class="danger-text">Clear →</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Updates Screen -->
-    <div class="screen-updates" id="screenUpdates">
-      <div class="header">
-        <div class="logo"><h1>UPDATES</h1><span>STATUS</span></div>
-        <div style="width:44px"></div>
-      </div>
-      <button class="add-status-btn" id="openStatusBtn">➕ Add Status Update</button>
-      <div class="status-list" id="statusList"></div>
-    </div>
-
-    <!-- Communities Screen -->
-    <div class="screen-communities" id="screenCommunities">
-      <div class="header">
-        <div class="logo"><h1>COMMUNITIES</h1><span>GROUPS</span></div>
-        <div style="width:44px"></div>
-      </div>
-      <div class="status-list">
-        <div class="status-card"><div class="status-avatar-small">🌍</div><div class="status-info"><div class="status-name">Global Goals</div><div class="status-text">1,234 members</div></div></div>
-        <div class="status-card"><div class="status-avatar-small">💻</div><div class="status-info"><div class="status-name">Tech Talk</div><div class="status-text">567 members</div></div></div>
-        <div class="status-card"><div class="status-avatar-small">🎮</div><div class="status-info"><div class="status-name">Gamers Hub</div><div class="status-text">2,101 members</div></div></div>
-      </div>
-    </div>
-
-    <!-- Calls Screen -->
-    <div class="screen-calls" id="screenCalls">
-      <div class="header">
-        <div class="logo"><h1>CALLS</h1><span>HISTORY</span></div>
-        <div style="width:44px"></div>
-      </div>
-      <div class="call-list" id="callList"></div>
-    </div>
-
-    <!-- Settings Screen -->
-    <div class="screen-settings" id="screenSettings">
-      <div class="header">
-        <button class="back-btn" id="settingsBackBtn">←</button>
-        <div class="logo"><h1 style="font-size:18px;">SETTINGS</h1></div>
-        <div style="width:36px"></div>
-      </div>
-      <div class="settings-body">
-
-        <div class="settings-section-label">Account</div>
-        <div class="settings-row" onclick="alert('Account settings coming soon')">
-          <div class="settings-row-left"><span class="settings-row-icon">👤</span><span class="settings-row-label">Account</span></div>
-          <span class="settings-chevron">›</span>
-        </div>
-        <div class="settings-row" onclick="alert('Privacy settings coming soon')">
-          <div class="settings-row-left"><span class="settings-row-icon">🔒</span><span class="settings-row-label">Privacy</span></div>
-          <span class="settings-chevron">›</span>
-        </div>
-
-        <div class="settings-section-label">Preferences</div>
-        <div class="settings-row" onclick="alert('Chats settings coming soon')">
-          <div class="settings-row-left"><span class="settings-row-icon">💬</span><span class="settings-row-label">Chats</span></div>
-          <span class="settings-chevron">›</span>
-        </div>
-        <div class="settings-row" onclick="alert('Notifications settings coming soon')">
-          <div class="settings-row-left"><span class="settings-row-icon">🔔</span><span class="settings-row-label">Notifications</span></div>
-          <span class="settings-chevron">›</span>
-        </div>
-        <div class="settings-row" onclick="alert('Storage & Data settings coming soon')">
-          <div class="settings-row-left"><span class="settings-row-icon">💾</span><span class="settings-row-label">Storage and Data</span></div>
-          <span class="settings-chevron">›</span>
-        </div>
-
-        <div class="settings-section-label">Appearance</div>
-        <div class="settings-row settings-row-inline">
-          <div class="settings-row-left"><span class="settings-row-icon">🎨</span><span class="settings-row-label">Theme</span></div>
-          <select id="themeSelect">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="oled">OLED Black</option>
-          </select>
-        </div>
-        <div class="settings-row settings-row-inline">
-          <div class="settings-row-left"><span class="settings-row-icon">🌐</span><span class="settings-row-label">App Language</span></div>
-          <select id="langSelect">
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="fr">Français</option>
-            <option value="de">Deutsch</option>
-            <option value="pt">Português</option>
-          </select>
-        </div>
-
-        <div class="settings-section-label">Profile</div>
-        <div class="settings-row settings-row-inline">
-          <div class="settings-row-left"><span class="settings-row-icon">✏️</span><span class="settings-row-label">Username</span></div>
-          <input type="text" id="usernameInput" placeholder="Your name" value="Alex J.">
-        </div>
-
-        <div class="settings-section-label">More</div>
-        <div class="settings-row" onclick="alert('Invite code: JUSTUS2024')">
-          <div class="settings-row-left"><span class="settings-row-icon">🔗</span><span class="settings-row-label">Invite a Friend</span></div>
-          <span class="settings-chevron">›</span>
-        </div>
-
-        <button class="settings-save-full-btn" id="saveSettingsBtn">Save Settings</button>
-      </div>
-    </div>
-
-    <!-- Help Screen -->
-    <div class="screen-help" id="screenHelp">
-      <div class="header">
-        <button class="back-btn" id="helpBackBtn">←</button>
-        <div class="logo"><h1 style="font-size:18px;">HELP</h1></div>
-        <div style="width:36px"></div>
-      </div>
-      <div class="help-body">
-        <p class="help-intro">Quick reference for common actions in JUSTUS.</p>
-        <table class="help-table">
-          <thead>
-            <tr>
-              <th>Action</th>
-              <th>How to do it</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>View profile</td>
-              <td>Long-press (hold) on any chat in the list</td>
-            </tr>
-            <tr>
-              <td>Mute notifications</td>
-              <td>In profile, tap the mute toggle</td>
-            </tr>
-            <tr>
-              <td>Clear chat</td>
-              <td>In profile, tap "Clear Chat"</td>
-            </tr>
-            <tr>
-              <td>Update status</td>
-              <td>Go to Updates tab → tap "Add Status Update"</td>
-            </tr>
-            <tr>
-              <td>Make a call</td>
-              <td>Go to Calls tab → tap the phone icon</td>
-            </tr>
-            <tr>
-              <td>Change theme</td>
-              <td>Settings tab → pick Light / Dark / OLED</td>
-            </tr>
-            <tr>
-              <td>Back to chats</td>
-              <td>Tap the ← arrow in top left</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="help-tip">
-          <strong>💡 Tip</strong>
-          On mobile, long-press means pressing and holding a chat for about one second until the profile opens.
-        </div>
-      </div>
-    </div>
-
+    <div class="chat-list" id="chatList"><div style="padding:20px;text-align:center">Loading chats...</div></div>
   </div>
 
-  <!-- Bottom Nav -->
+  <div class="screen-chat" id="screenChat">
+    <div class="chat-header"><button class="back-btn" id="chatBackBtn">←</button><div class="chat-header-avatar" id="chatAvatar">?</div><div class="chat-header-info"><div class="chat-header-name" id="chatName"></div><div class="chat-header-status" id="chatStatus"></div></div></div>
+    <div class="messages-area" id="messagesArea"></div>
+    <div class="input-area"><textarea class="message-input" id="messageInput" rows="1" placeholder="Type a message..."></textarea><button class="send-btn" id="sendBtn">➤</button></div>
+  </div>
+
+  <div class="screen-profile" id="screenProfile">
+    <div class="profile-header"><button class="back-btn" id="profileBackBtn">←</button><div style="flex:1"></div></div>
+    <div class="profile-avatar-large" id="profileAvatar">?</div>
+    <div class="profile-name" id="profileName"></div>
+    <div class="profile-status" id="profileStatus"></div>
+    <div class="profile-section"><div class="profile-section-title">Privacy</div><div class="profile-item" id="muteItem"><div class="profile-item-left"><span class="profile-item-icon">🔕</span><span class="profile-item-label">Mute Notifications</span></div><div class="toggle-switch" id="muteToggle"></div></div></div>
+    <div class="profile-section"><div class="profile-section-title">Chat</div><div class="profile-item" id="clearChatItem"><div class="profile-item-left"><span class="profile-item-icon">🗑️</span><span class="profile-item-label">Clear Chat</span></div><span class="danger-text">Clear →</span></div></div>
+  </div>
+
+  <div class="screen-updates" id="screenUpdates">
+    <div class="header"><div class="logo"><h1>UPDATES</h1><span>STATUS</span></div><div style="width:44px"></div></div>
+    <button class="add-status-btn" id="openStatusBtn">➕ Add Status Update</button>
+    <div class="status-list" id="statusList"></div>
+  </div>
+
+  <div class="screen-calls" id="screenCalls">
+    <div class="header"><div class="logo"><h1>CALLS</h1><span>HISTORY</span></div><div style="width:44px"></div></div>
+    <div class="call-list" id="callList"></div>
+  </div>
+
+  <div class="screen-settings" id="screenSettings">
+    <div class="header"><button class="back-btn" id="settingsBackBtn">←</button><div class="logo"><h1 style="font-size:18px;">SETTINGS</h1></div><div style="width:36px"></div></div>
+    <div class="settings-body">
+      <div class="settings-section-label">Account</div>
+      <div class="settings-row" id="accSettingsBtn"><div class="settings-row-left"><span class="settings-row-icon">👤</span><span class="settings-row-label">Account</span></div><span class="settings-chevron">›</span></div>
+      <div class="settings-row" id="privacySettingsBtn"><div class="settings-row-left"><span class="settings-row-icon">🔒</span><span class="settings-row-label">Privacy</span></div><span class="settings-chevron">›</span></div>
+      <div class="settings-section-label">Preferences</div>
+      <div class="settings-row" id="chatsPrefBtn"><div class="settings-row-left"><span class="settings-row-icon">💬</span><span class="settings-row-label">Chats</span></div><span class="settings-chevron">›</span></div>
+      <div class="settings-row" id="notifPrefBtn"><div class="settings-row-left"><span class="settings-row-icon">🔔</span><span class="settings-row-label">Notifications</span></div><span class="settings-chevron">›</span></div>
+      <div class="settings-row" id="storagePrefBtn"><div class="settings-row-left"><span class="settings-row-icon">💾</span><span class="settings-row-label">Storage and Data</span></div><span class="settings-chevron">›</span></div>
+      <div class="settings-section-label">Appearance</div>
+      <div class="settings-row settings-row-inline"><div class="settings-row-left"><span class="settings-row-icon">🎨</span><span class="settings-row-label">Theme</span></div><select id="themeSelect"><option value="light">Light</option><option value="dark">Dark</option><option value="oled">OLED Black</option></select></div>
+      <div class="settings-row settings-row-inline"><div class="settings-row-left"><span class="settings-row-icon">🌐</span><span class="settings-row-label">App Language</span></div><select id="langSelect"><option value="en">English</option><option value="es">Español</option></select></div>
+      <div class="settings-section-label">Profile</div>
+      <div class="settings-row settings-row-inline"><div class="settings-row-left"><span class="settings-row-icon">✏️</span><span class="settings-row-label">Username</span></div><input type="text" id="usernameInput" placeholder="Your name"></div>
+      <div class="settings-section-label">More</div>
+      <div class="settings-row" id="inviteFromSettings"><div class="settings-row-left"><span class="settings-row-icon">🔗</span><span class="settings-row-label">Invite a Friend</span></div><span class="settings-chevron">›</span></div>
+      <button class="settings-save-full-btn" id="saveSettingsBtn">Save Settings</button>
+    </div>
+  </div>
+
+  <div class="screen-help" id="screenHelp">
+    <div class="header"><button class="back-btn" id="helpBackBtn">←</button><div class="logo"><h1 style="font-size:18px;">HELP</h1></div><div style="width:36px"></div></div>
+    <div class="help-body"><p class="help-intro">Quick reference for JUSTUS.</p><table class="help-table"><thead><tr><th>Action</th><th>How to do it</th></tr></thead><tbody><tr><td>View profile</td><td>Long-press any chat</td></tr><tr><td>Mute notifications</td><td>In profile, tap mute toggle</td></tr><tr><td>Clear chat</td><td>In profile, tap Clear Chat</td></tr><tr><td>Update status</td><td>Updates tab → Add Status</td></tr><tr><td>Change theme</td><td>Settings → Theme picker</td></tr></tbody></table><div class="help-tip"><strong>💡 Tip</strong> Long-press means holding for ~1 second.</div></div>
+  </div>
+
   <div class="bottom-nav">
     <div class="nav-item active" data-screen="chats"><div class="nav-icon">💬</div><div class="nav-label">Chats</div></div>
     <div class="nav-item" data-screen="updates"><div class="nav-icon">📢</div><div class="nav-label">Updates</div></div>
     <div class="nav-item" data-screen="calls"><div class="nav-icon">📞</div><div class="nav-label">Calls</div></div>
   </div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="status-modal" id="statusModal"><h3>Update Status</h3><textarea id="statusInput" rows="3" placeholder="What's on your mind?"></textarea><div class="modal-buttons"><button class="modal-cancel" id="cancelStatusBtn">Cancel</button><button class="modal-save" id="postStatusBtn">Post</button></div></div>
 </div>
 
 <script>
-// Chat data
-let chats = [
-  { id: 1, name: "Chiselda", avatar: "C", status: "Online", lastMessage: "Hey! How are you?", time: "21:16", unread: 2, muted: false },
-  { id: 2, name: "Sarah Chen", avatar: "S", status: "Online", lastMessage: "Thanks for the update", time: "9:15 AM", unread: 0, muted: false },
-  { id: 3, name: "Mike Johnson", avatar: "M", status: "Last seen yesterday", lastMessage: "Love the app! 😊", time: "Yesterday", unread: 0, muted: false },
-  { id: 4, name: "Emily Davis", avatar: "E", status: "Online", lastMessage: "See you tomorrow", time: "Yesterday", unread: 1, muted: false }
-];
+const firebaseConfig = { apiKey: "AIzaSyDUHVeaHIMRS8GxkFNEjVSXfUeKr_mQnp0", authDomain: "just-you-n-i.firebaseapp.com", databaseURL: "https://just-you-n-i-default-rtdb.firebaseio.com", projectId: "just-you-n-i", storageBucket: "just-you-n-i.firebasestorage.app" };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(), db = firebase.database();
 
-let messages = {
-  1: [{ text: "Hey! How are you?", sent: false, time: "21:10" }, { text: "I'm good!", sent: true, time: "21:12" }],
-  2: [{ text: "Thanks for the update", sent: false, time: "9:10 AM" }],
-  3: [{ text: "Love the app! 😊", sent: false, time: "Yesterday" }],
-  4: [{ text: "See you tomorrow", sent: false, time: "Yesterday" }]
+let currentUser = null, currentChatId = null, currentProfileId = null, allUsers = {};
+
+function showScreen(screen) {
+  document.querySelectorAll('.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile, .screen-help, .screen-auth').forEach(s => s.classList.remove('show'));
+  document.getElementById(`screen${screen.charAt(0).toUpperCase() + screen.slice(1)}`).classList.add('show');
+  document.querySelectorAll('.nav-item').forEach(item => { item.classList.remove('active'); if (item.dataset.screen === screen) item.classList.add('active'); });
+}
+
+// Auth
+let isSignup = false;
+document.getElementById('authToggle').onclick = () => { isSignup = !isSignup; document.getElementById('authBtn').textContent = isSignup ? 'Create Account' : 'Sign In'; document.getElementById('authName').style.display = isSignup ? 'block' : 'none'; };
+document.getElementById('authBtn').onclick = async () => {
+  const email = document.getElementById('authEmail').value.trim(), pass = document.getElementById('authPassword').value.trim();
+  if (!email || !pass) return;
+  try {
+    if (isSignup) { const name = document.getElementById('authName').value.trim(); if (!name) return; const cred = await auth.createUserWithEmailAndPassword(email, pass); await cred.user.updateProfile({ displayName: name }); }
+    else await auth.signInWithEmailAndPassword(email, pass);
+  } catch(e) { document.getElementById('authError').innerText = e.message; }
 };
 
-let statuses = [
-  { name: "Alex J.", text: "Working on JUSTUS! 🚀", time: "2 hours ago", avatar: "A" },
-  { name: "Sarah Chen", text: "Beautiful day ☀️", time: "5 hours ago", avatar: "S" }
-];
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    currentUser = { uid: user.uid, name: user.displayName || user.email.split('@')[0] };
+    document.getElementById('screenAuth').style.display = 'none';
+    document.getElementById('screenChats').classList.add('show');
+    await db.ref(`users/${user.uid}`).set({ name: currentUser.name, online: true, lastSeen: Date.now() });
+    db.ref(`users/${user.uid}/online`).onDisconnect().set(false);
+    loadChats();
+    showScreen('chats');
+  } else { showScreen('auth'); }
+});
 
-let calls = [
-  { name: "Chiselda", type: "Missed", time: "Yesterday", avatar: "C" },
-  { name: "Sarah Chen", type: "Incoming", time: "2 days ago", avatar: "S" }
-];
+function getKey(uid1, uid2) { return [uid1, uid2].sort().join('_'); }
 
-let currentChatId = 1;
-let currentProfileId = null;
-
-// Load saved data
-function loadData() {
-  const savedTheme = localStorage.getItem('justus_theme');
-  if (savedTheme) {
-    document.body.className = savedTheme;
-    document.getElementById('themeSelect').value = savedTheme;
-  }
-  const savedUsername = localStorage.getItem('justus_username');
-  if (savedUsername) document.getElementById('usernameInput').value = savedUsername;
-  
-  const savedStatuses = localStorage.getItem('justus_statuses');
-  if (savedStatuses) statuses = JSON.parse(savedStatuses);
-  
-  const savedCalls = localStorage.getItem('justus_calls');
-  if (savedCalls) calls = JSON.parse(savedCalls);
-  
-  chats.forEach(chat => {
-    const muted = localStorage.getItem(`muted_${chat.id}`);
-    if (muted) chat.muted = muted === 'true';
-  });
+function loadChats() {
+  db.ref('users').on('value', snap => { allUsers = snap.val() || {}; renderChatList(); });
 }
 
 function renderChatList() {
   const container = document.getElementById('chatList');
-  container.innerHTML = chats.map(chat => `
-    <div class="chat-item" data-id="${chat.id}">
-      <div class="chat-avatar-img">${chat.avatar}</div>
-      <div class="chat-info">
-        <div class="chat-name">${chat.name} ${chat.muted ? '🔕' : ''}</div>
-        <div class="chat-preview">${chat.lastMessage}</div>
-      </div>
-      <div class="chat-meta">
-        <div class="chat-time">${chat.time}</div>
-        ${chat.unread > 0 ? `<div class="unread-badge">${chat.unread}</div>` : ''}
-      </div>
-    </div>
-  `).join('');
-  
-  document.querySelectorAll('.chat-item').forEach(item => {
-    item.addEventListener('click', () => openChat(parseInt(item.dataset.id)));
-    item.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      openProfile(parseInt(item.dataset.id));
-      return false;
-    });
-
-    // Long-press for mobile
-    let pressTimer;
-    item.addEventListener('touchstart', () => {
-      pressTimer = setTimeout(() => openProfile(parseInt(item.dataset.id)), 600);
-    });
-    item.addEventListener('touchend', () => clearTimeout(pressTimer));
-    item.addEventListener('touchmove', () => clearTimeout(pressTimer));
-  });
+  const others = Object.entries(allUsers).filter(([uid]) => uid !== currentUser.uid);
+  if (!others.length) { container.innerHTML = '<div style="padding:40px;text-align:center">✨ No users yet</div>'; return; }
+  container.innerHTML = others.map(([uid, u]) => `<div class="chat-item" data-id="${uid}"><div class="chat-avatar-img">${(u.name||'?')[0].toUpperCase()}</div><div class="chat-info"><div class="chat-name">${u.name}</div><div class="chat-preview">${u.online ? 'Online' : 'Offline'}</div></div></div>`).join('');
+  document.querySelectorAll('.chat-item').forEach(el => { const uid = el.dataset.id; el.onclick = () => openChat(uid, allUsers[uid]?.name); let timer; el.ontouchstart = () => timer = setTimeout(() => openProfile(uid), 600); el.ontouchend = () => clearTimeout(timer); });
 }
 
-function openChat(chatId) {
-  currentChatId = chatId;
-  const chat = chats.find(c => c.id === chatId);
-  document.getElementById('chatName').innerText = chat.name;
-  document.getElementById('chatAvatar').innerText = chat.avatar;
-  document.getElementById('chatStatus').innerText = chat.status;
-  
-  const msgContainer = document.getElementById('messagesArea');
-  const msgs = messages[chatId] || [];
-  if (msgs.length === 0) {
-    msgContainer.innerHTML = '<div class="date-divider"><span>Today</span></div><div style="text-align:center;padding:20px">No messages yet</div>';
-  } else {
-    let html = '<div class="date-divider"><span>Today</span></div>';
-    msgs.forEach(msg => {
-      html += `<div class="message ${msg.sent ? 'sent' : 'received'}">
-        <div class="message-bubble">${msg.text}<div class="message-meta"><span>${msg.time}</span></div></div>
-      </div>`;
-    });
-    msgContainer.innerHTML = html;
-  }
-  msgContainer.scrollTop = msgContainer.scrollHeight;
-  
-  chat.unread = 0;
-  renderChatList();
+function openChat(uid, name) {
+  currentChatId = uid;
+  document.getElementById('chatName').innerText = name;
+  document.getElementById('chatAvatar').innerText = name[0].toUpperCase();
+  document.getElementById('chatStatus').innerText = allUsers[uid]?.online ? 'Online' : 'Offline';
+  const key = getKey(currentUser.uid, uid);
+  db.ref(`messages/${key}`).limitToLast(50).on('child_added', snap => { if (snap.val()) appendMessage(snap.val()); });
   showScreen('chat');
 }
 
-function openProfile(chatId) {
-  currentProfileId = chatId;
-  const chat = chats.find(c => c.id === chatId);
-  document.getElementById('profileAvatar').innerText = chat.avatar;
-  document.getElementById('profileName').innerText = chat.name;
-  document.getElementById('profileStatus').innerText = chat.status;
-  
-  const muteToggle = document.getElementById('muteToggle');
-  if (chat.muted) muteToggle.classList.add('active');
-  else muteToggle.classList.remove('active');
-  
-  showScreen('profile');
+function appendMessage(msg) {
+  const container = document.getElementById('messagesArea');
+  const isMine = msg.sender === currentUser.uid;
+  const time = new Date(msg.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  if (container.innerHTML === '') container.innerHTML = '<div class="date-divider"><span>Today</span></div>';
+  container.innerHTML += `<div class="message ${isMine ? 'sent' : 'received'}"><div class="message-bubble">${msg.text}<div class="message-meta"><span>${time}</span>${isMine ? ' ✓✓' : ''}</div></div></div>`;
+  container.scrollTop = container.scrollHeight;
 }
 
-function toggleMute() {
-  if (!currentProfileId) return;
-  const chat = chats.find(c => c.id === currentProfileId);
-  chat.muted = !chat.muted;
-  localStorage.setItem(`muted_${chat.id}`, chat.muted);
-  const muteToggle = document.getElementById('muteToggle');
-  if (chat.muted) muteToggle.classList.add('active');
-  else muteToggle.classList.remove('active');
-  renderChatList();
-}
-
-function clearChat() {
-  if (!currentProfileId) return;
-  if (confirm('Clear all messages in this chat?')) {
-    messages[currentProfileId] = [];
-    if (currentChatId === currentProfileId) {
-      document.getElementById('messagesArea').innerHTML = '<div class="date-divider"><span>Today</span></div><div style="text-align:center;padding:20px">No messages yet</div>';
-    }
-    alert('Chat cleared!');
-  }
-}
-
-function sendMessage() {
+document.getElementById('sendBtn').onclick = () => {
   const input = document.getElementById('messageInput');
   const text = input.value.trim();
-  if (!text) return;
-  
-  const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  if (!messages[currentChatId]) messages[currentChatId] = [];
-  messages[currentChatId].push({ text: text, sent: true, time: time });
-  
-  const container = document.getElementById('messagesArea');
-  if (container.innerHTML.includes('No messages yet')) container.innerHTML = '<div class="date-divider"><span>Today</span></div>';
-  container.innerHTML += `<div class="message sent"><div class="message-bubble">${text}<div class="message-meta"><span>${time}</span> ✓✓</div></div></div>`;
-  container.scrollTop = container.scrollHeight;
+  if (!text || !currentChatId) return;
+  const key = getKey(currentUser.uid, currentChatId);
+  db.ref(`messages/${key}`).push({ text, sender: currentUser.uid, ts: Date.now() });
   input.value = '';
-}
+};
+document.getElementById('messageInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('sendBtn').click(); } });
+document.getElementById('chatBackBtn').onclick = () => showScreen('chats');
+document.getElementById('profileBackBtn').onclick = () => showScreen('chats');
+document.getElementById('settingsBackBtn').onclick = () => showScreen('chats');
+document.getElementById('helpBackBtn').onclick = () => showScreen('chats');
 
-function renderStatusList() {
-  const container = document.getElementById('statusList');
-  container.innerHTML = statuses.map(s => `
-    <div class="status-card">
-      <div class="status-avatar-small">${s.avatar}</div>
-      <div class="status-info">
-        <div class="status-name">${s.name}</div>
-        <div class="status-text">${s.text}</div>
-        <div class="status-time">${s.time}</div>
-      </div>
-    </div>
-  `).join('');
-}
+function openProfile(uid) { currentProfileId = uid; const user = allUsers[uid]; document.getElementById('profileAvatar').innerText = user.name[0].toUpperCase(); document.getElementById('profileName').innerText = user.name; document.getElementById('profileStatus').innerText = user.online ? 'Online' : 'Offline'; showScreen('profile'); }
+document.getElementById('clearChatItem').onclick = () => { if (confirm('Clear chat?')) db.ref(`messages/${getKey(currentUser.uid, currentProfileId)}`).remove(); };
+document.getElementById('muteItem').onclick = () => alert('Mute coming soon');
 
-function addStatus() {
-  const text = document.getElementById('statusInput').value.trim();
-  if (!text) return;
-  const username = localStorage.getItem('justus_username') || 'Alex J.';
-  statuses.unshift({ name: username, text: text, time: 'Just now', avatar: username.charAt(0) });
-  localStorage.setItem('justus_statuses', JSON.stringify(statuses));
-  renderStatusList();
-  document.getElementById('statusModal').classList.remove('open');
-  document.getElementById('overlay').classList.remove('show');
-  document.getElementById('statusInput').value = '';
-  alert('Status posted!');
-}
-
-function renderCallList() {
-  const container = document.getElementById('callList');
-  container.innerHTML = calls.map(c => `
-    <div class="call-item">
-      <div class="call-avatar">${c.avatar}</div>
-      <div class="call-info">
-        <div class="call-name">${c.name}</div>
-        <div class="call-type">${c.type}</div>
-        <div class="status-time">${c.time}</div>
-      </div>
-      <button class="call-btn" data-name="${c.name}">📞</button>
-    </div>
-  `).join('');
-  
-  document.querySelectorAll('.call-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const name = btn.dataset.name;
-      calls.unshift({ name: name, type: 'Outgoing', time: 'Just now', avatar: name.charAt(0) });
-      localStorage.setItem('justus_calls', JSON.stringify(calls.slice(0, 20)));
-      renderCallList();
-      alert(`Calling ${name}...`);
-    });
-  });
-}
-
-function saveSettings() {
+// Settings - REAL Firebase save
+document.getElementById('saveSettingsBtn').onclick = async () => {
+  const newName = document.getElementById('usernameInput').value.trim();
+  if (newName && newName !== currentUser.name) { await auth.currentUser.updateProfile({ displayName: newName }); await db.ref(`users/${currentUser.uid}/name`).set(newName); currentUser.name = newName; alert('Name updated!'); }
   const theme = document.getElementById('themeSelect').value;
-  const username = document.getElementById('usernameInput').value;
-  localStorage.setItem('justus_theme', theme);
-  localStorage.setItem('justus_username', username);
   document.body.className = theme;
-  alert('Settings saved!');
-}
+  localStorage.setItem('justus_theme', theme);
+};
+document.getElementById('themeSelect').onchange = () => { document.body.className = document.getElementById('themeSelect').value; };
+document.getElementById('accSettingsBtn').onclick = () => { const newPass = prompt('Enter new password (min 6 chars)'); if (newPass && newPass.length >= 6) auth.currentUser.updatePassword(newPass).then(() => alert('Password changed!')); };
+document.getElementById('privacySettingsBtn').onclick = () => alert('Privacy: Last seen & read receipts (coming soon)');
+document.getElementById('chatsPrefBtn').onclick = () => alert('Chat wallpaper, font size (coming soon)');
+document.getElementById('notifPrefBtn').onclick = () => alert('Push notifications (enable in browser)');
+document.getElementById('storagePrefBtn').onclick = () => alert('Storage usage: ' + (localStorage.length || 0) + ' items cached');
+document.getElementById('inviteFromSettings').onclick = () => alert('Invite code: JUSTUS2024');
+document.getElementById('menuSettings').onclick = () => { dropdown.classList.remove('show'); showScreen('settings'); };
+document.getElementById('menuHelp').onclick = () => { dropdown.classList.remove('show'); showScreen('help'); };
+document.getElementById('menuInvite').onclick = () => alert('Invite code: JUSTUS2024');
+document.getElementById('menuLogout').onclick = () => auth.signOut();
 
-function showScreen(screen) {
-  document.querySelectorAll('.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile, .screen-help').forEach(s => s.classList.remove('show'));
-  document.getElementById(`screen${screen.charAt(0).toUpperCase() + screen.slice(1)}`).classList.add('show');
-  
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-    if (item.dataset.screen === screen) item.classList.add('active');
-  });
-  
-  if (screen === 'updates') renderStatusList();
-  if (screen === 'calls') renderCallList();
-}
+// Status & calls (demo + localStorage)
+let statuses = JSON.parse(localStorage.getItem('justus_statuses') || '[{"name":"Alex J.","text":"Working on JUSTUS! 🚀","time":"2 hours ago","avatar":"A"}]');
+let calls = JSON.parse(localStorage.getItem('justus_calls') || '[{"name":"Chiselda","type":"Missed","time":"Yesterday","avatar":"C"}]');
+function renderStatusList() { const container = document.getElementById('statusList'); container.innerHTML = statuses.map(s => `<div class="status-card"><div class="status-avatar-small">${s.avatar}</div><div class="status-info"><div class="status-name">${s.name}</div><div class="status-text">${s.text}</div><div class="status-time">${s.time}</div></div></div>`).join(''); }
+function renderCallList() { const container = document.getElementById('callList'); container.innerHTML = calls.map(c => `<div class="call-item"><div class="call-avatar">${c.avatar}</div><div class="call-info"><div class="call-name">${c.name}</div><div class="call-type">${c.type}</div><div class="status-time">${c.time}</div></div><button class="call-btn" data-name="${c.name}">📞</button></div>`).join(''); document.querySelectorAll('.call-btn').forEach(btn => btn.onclick = () => { const name = btn.dataset.name; calls.unshift({ name, type: 'Outgoing', time: 'Just now', avatar: name.charAt(0) }); localStorage.setItem('justus_calls', JSON.stringify(calls.slice(0,20))); renderCallList(); alert(`Calling ${name}...`); }); }
+document.getElementById('openStatusBtn').onclick = () => { document.getElementById('statusModal').classList.add('open'); document.getElementById('overlay').classList.add('show'); };
+document.getElementById('cancelStatusBtn').onclick = () => { document.getElementById('statusModal').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); };
+document.getElementById('postStatusBtn').onclick = () => { const text = document.getElementById('statusInput').value.trim(); if (text) { statuses.unshift({ name: currentUser?.name || 'User', text, time: 'Just now', avatar: (currentUser?.name?.[0] || 'U').toUpperCase() }); localStorage.setItem('justus_statuses', JSON.stringify(statuses.slice(0,20))); renderStatusList(); document.getElementById('statusModal').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); document.getElementById('statusInput').value = ''; alert('Status posted!'); } };
+document.getElementById('overlay').onclick = () => { document.getElementById('statusModal').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); };
 
-// Event listeners
-document.getElementById('sendBtn').addEventListener('click', sendMessage);
-document.getElementById('messageInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
-});
-document.getElementById('chatBackBtn').addEventListener('click', () => showScreen('chats'));
-document.getElementById('profileBackBtn').addEventListener('click', () => showScreen('chats'));
-document.getElementById('settingsBackBtn').addEventListener('click', () => showScreen('chats'));
-document.getElementById('helpBackBtn').addEventListener('click', () => showScreen('chats'));
-document.getElementById('muteItem').addEventListener('click', toggleMute);
-document.getElementById('clearChatItem').addEventListener('click', clearChat);
-document.getElementById('openStatusBtn').addEventListener('click', () => {
-  document.getElementById('statusModal').classList.add('open');
-  document.getElementById('overlay').classList.add('show');
-});
-document.getElementById('cancelStatusBtn').addEventListener('click', () => {
-  document.getElementById('statusModal').classList.remove('open');
-  document.getElementById('overlay').classList.remove('show');
-});
-document.getElementById('postStatusBtn').addEventListener('click', addStatus);
-document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
-document.getElementById('overlay').addEventListener('click', () => {
-  document.getElementById('statusModal').classList.remove('open');
-  document.getElementById('overlay').classList.remove('show');
-});
+// Navigation
+document.querySelectorAll('.nav-item').forEach(item => { item.onclick = () => { if (item.dataset.screen === 'chats') showScreen('chats'); else if (item.dataset.screen === 'updates') { renderStatusList(); showScreen('updates'); } else if (item.dataset.screen === 'calls') { renderCallList(); showScreen('calls'); } }; });
 
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => showScreen(item.dataset.screen));
-});
+// Dropdown
+const menuBtn = document.getElementById('menuBtn'), dropdown = document.getElementById('dropdownMenu');
+menuBtn.onclick = (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); };
+document.onclick = () => dropdown.classList.remove('show');
 
-// Menu dropdown
-const menuBtn = document.getElementById('menuBtn');
-const dropdown = document.getElementById('dropdownMenu');
-menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); });
-document.addEventListener('click', () => dropdown.classList.remove('show'));
-document.getElementById('menuSettings').addEventListener('click', () => { dropdown.classList.remove('show'); showScreen('settings'); });
-document.getElementById('menuHelp').addEventListener('click', () => { dropdown.classList.remove('show'); showScreen('help'); });
-document.getElementById('menuInvite').addEventListener('click', () => { dropdown.classList.remove('show'); alert('Invite code: JUSTUS2024'); });
-
-// Initialize
-loadData();
-renderChatList();
+// Load saved theme
+const savedTheme = localStorage.getItem('justus_theme');
+if (savedTheme) document.body.className = savedTheme;
+document.getElementById('themeSelect').value = savedTheme || 'light';
+if (currentUser) document.getElementById('usernameInput').value = currentUser.name;
 renderStatusList();
 renderCallList();
-showScreen('chats');
 </script>
 </body>
 </html>

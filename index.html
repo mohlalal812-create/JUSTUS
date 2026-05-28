@@ -82,18 +82,18 @@ body {
 }
 
 /* Screens */
-.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile {
+.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile, .screen-help {
   display: none;
   flex-direction: column;
   height: 100%;
 }
 
 .screen-chats.show, .screen-chat.show, .screen-updates.show, 
-.screen-communities.show, .screen-calls.show, .screen-settings.show, .screen-profile.show {
+.screen-communities.show, .screen-calls.show, .screen-settings.show, .screen-profile.show, .screen-help.show {
   display: flex;
 }
 
-/* Header - CENTERED JUSTUS */
+/* Header */
 .header {
   padding: 16px;
   background: var(--header-bg);
@@ -529,6 +529,95 @@ body {
   color: var(--text-primary);
 }
 
+/* ── Help Screen ── */
+.help-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 16px;
+}
+
+.help-intro {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.help-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.help-table thead tr {
+  background: var(--header-bg);
+}
+
+.help-table thead th {
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.help-table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.help-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.help-table tbody tr:nth-child(even) {
+  background: var(--bg-secondary);
+}
+
+.help-table tbody tr:nth-child(odd) {
+  background: var(--bg-primary);
+}
+
+.help-table td {
+  padding: 13px 14px;
+  font-size: 13px;
+  vertical-align: top;
+  line-height: 1.45;
+}
+
+.help-table td:first-child {
+  font-weight: 700;
+  color: var(--text-primary);
+  width: 38%;
+  white-space: nowrap;
+}
+
+.help-table td:last-child {
+  color: var(--text-secondary);
+}
+
+.help-tip {
+  margin-top: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-left: 3px solid #075E54;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.help-tip strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
 /* Bottom Nav */
 .bottom-nav {
   background: var(--bg-primary);
@@ -687,6 +776,7 @@ body {
       </div>
       <div class="dropdown-menu" id="dropdownMenu">
         <div class="dropdown-item" id="menuSettings">⚙️ Settings</div>
+        <div class="dropdown-item" id="menuHelp">❓ Help</div>
         <div class="dropdown-item" id="menuInvite">🔗 Invite Friend</div>
       </div>
       <div class="chat-list" id="chatList"></div>
@@ -799,6 +889,61 @@ body {
         <button class="add-status-btn" id="saveSettingsBtn" style="margin:20px 0 0 0">Save Settings</button>
       </div>
     </div>
+
+    <!-- Help Screen -->
+    <div class="screen-help" id="screenHelp">
+      <div class="header">
+        <button class="back-btn" id="helpBackBtn">←</button>
+        <div class="logo"><h1 style="font-size:18px;">HELP</h1></div>
+        <div style="width:36px"></div>
+      </div>
+      <div class="help-body">
+        <p class="help-intro">Quick reference for common actions in JUSTUS.</p>
+        <table class="help-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>How to do it</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>View profile</td>
+              <td>Long-press (hold) on any chat in the list</td>
+            </tr>
+            <tr>
+              <td>Mute notifications</td>
+              <td>In profile, tap the mute toggle</td>
+            </tr>
+            <tr>
+              <td>Clear chat</td>
+              <td>In profile, tap "Clear Chat"</td>
+            </tr>
+            <tr>
+              <td>Update status</td>
+              <td>Go to Updates tab → tap "Add Status Update"</td>
+            </tr>
+            <tr>
+              <td>Make a call</td>
+              <td>Go to Calls tab → tap the phone icon</td>
+            </tr>
+            <tr>
+              <td>Change theme</td>
+              <td>Settings tab → pick Light / Dark / OLED</td>
+            </tr>
+            <tr>
+              <td>Back to chats</td>
+              <td>Tap the ← arrow in top left</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="help-tip">
+          <strong>💡 Tip</strong>
+          On mobile, long-press means pressing and holding a chat for about one second until the profile opens.
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Bottom Nav -->
@@ -862,12 +1007,6 @@ function loadData() {
   });
 }
 
-function saveChats() {
-  chats.forEach(chat => {
-    localStorage.setItem(`muted_${chat.id}`, chat.muted);
-  });
-}
-
 function renderChatList() {
   const container = document.getElementById('chatList');
   container.innerHTML = chats.map(chat => `
@@ -891,6 +1030,14 @@ function renderChatList() {
       openProfile(parseInt(item.dataset.id));
       return false;
     });
+
+    // Long-press for mobile
+    let pressTimer;
+    item.addEventListener('touchstart', () => {
+      pressTimer = setTimeout(() => openProfile(parseInt(item.dataset.id)), 600);
+    });
+    item.addEventListener('touchend', () => clearTimeout(pressTimer));
+    item.addEventListener('touchmove', () => clearTimeout(pressTimer));
   });
 }
 
@@ -1035,7 +1182,7 @@ function saveSettings() {
 }
 
 function showScreen(screen) {
-  document.querySelectorAll('.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile').forEach(s => s.classList.remove('show'));
+  document.querySelectorAll('.screen-chats, .screen-chat, .screen-updates, .screen-communities, .screen-calls, .screen-settings, .screen-profile, .screen-help').forEach(s => s.classList.remove('show'));
   document.getElementById(`screen${screen.charAt(0).toUpperCase() + screen.slice(1)}`).classList.add('show');
   
   document.querySelectorAll('.nav-item').forEach(item => {
@@ -1055,6 +1202,7 @@ document.getElementById('messageInput').addEventListener('keypress', (e) => {
 document.getElementById('chatBackBtn').addEventListener('click', () => showScreen('chats'));
 document.getElementById('profileBackBtn').addEventListener('click', () => showScreen('chats'));
 document.getElementById('settingsBackBtn').addEventListener('click', () => showScreen('chats'));
+document.getElementById('helpBackBtn').addEventListener('click', () => showScreen('chats'));
 document.getElementById('muteItem').addEventListener('click', toggleMute);
 document.getElementById('clearChatItem').addEventListener('click', clearChat);
 document.getElementById('openStatusBtn').addEventListener('click', () => {
@@ -1082,6 +1230,7 @@ const dropdown = document.getElementById('dropdownMenu');
 menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); });
 document.addEventListener('click', () => dropdown.classList.remove('show'));
 document.getElementById('menuSettings').addEventListener('click', () => { dropdown.classList.remove('show'); showScreen('settings'); });
+document.getElementById('menuHelp').addEventListener('click', () => { dropdown.classList.remove('show'); showScreen('help'); });
 document.getElementById('menuInvite').addEventListener('click', () => { dropdown.classList.remove('show'); alert('Invite code: JUSTUS2024'); });
 
 // Initialize
